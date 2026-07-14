@@ -1,0 +1,49 @@
+{
+  "name": "junie-extensions",
+  "owner": {
+    "name": "Robin Rehbein",
+    "email": "robin.rehbein@mimacom.com"
+  },
+  "metadata": {
+    "description": "Extensions that bring Claude-Code-style capabilities to JetBrains Junie CLI: curated subagent orchestration and cross-session memory.",
+    "version": "0.1.0",
+    "homepage": "https://github.com/robinrehbein/junie-extensions"
+  },
+  "extensions": [
+    {
+      "name": "junie-subagents",
+      "source": "./extensions/junie-subagents",
+      "description": "A curated set of focused subagents (explorer, planner, implementer, reviewer, test-runner) modeled on Claude Code's built-in agents, plus a guideline that teaches Junie's main agent to decompose complex tasks and delegate them — the closest practical equivalent to Claude Code's create/process/orchestrate subagent workflow.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Robin Rehbein"
+      },
+      "category": "workflow",
+      "keywords": [
+        "subagents",
+        "orchestration",
+        "claude-code",
+        "planning",
+        "code-review",
+        "exploration"
+      ]
+    },
+    {
+      "name": "junie-memory",
+      "source": "./extensions/junie-memory",
+      "description": "A cross-session memory for Junie CLI, modeled on Claude Code's memory: an auto-loaded guideline that teaches the agent to recall facts at the start of a task and persist durable ones as files under ~/.junie/memory/, plus /remember and /memories slash commands. File-convention based — no server required.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Robin Rehbein"
+      },
+      "category": "workflow",
+      "keywords": [
+        "memory",
+        "persistence",
+        "claude-code",
+        "guidelines",
+        "recall"
+      ]
+    }
+  ]
+}

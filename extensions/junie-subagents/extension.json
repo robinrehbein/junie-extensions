@@ -1,0 +1,4 @@
+{
+  "name": "junie-subagents",
+  "description": "A curated set of focused subagents (explorer, planner, implementer, reviewer, test-runner) modeled on Claude Code's built-in agents, plus a guideline that teaches Junie's main agent to decompose complex tasks and delegate them — the closest practical equivalent to Claude Code's create/process/orchestrate subagent workflow."
+}
