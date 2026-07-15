@@ -11,6 +11,7 @@ top of those mechanisms.
 |-----------|--------|-----|
 | **junie-subagents** | Claude-Code-style create / process / orchestrate of subagents | 5 focused subagents (`explorer`, `planner`, `implementer`, `reviewer`, `test-runner`) + an orchestration guideline for the main agent |
 | **junie-memory** | Cross-session memory | An auto-loaded guideline + `/remember` and `/memories` commands, backed by files under `~/.junie/memory/` |
+| **junie-ponytail** | Lazy-senior-dev mode (minimal code, YAGNI) | An always-on guideline + 6 auto-invoked skills + `/ponytail*` commands; adapted from [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) (MIT) |
 
 ## Layout
 
@@ -27,6 +28,13 @@ extensions/
     guidelines/memory.md              # auto-loaded → recall protocol
     commands/remember.md              # /remember fact="…"
     commands/memories.md              # /memories
+    scripts/recall-memory.sh          # optional eager-recall hook (UserPromptSubmit)
+    README.md
+  junie-ponytail/
+    extension.json
+    guidelines/ponytail.md            # always-on lazy-dev context
+    skills/ponytail*/SKILL.md         # 6 auto-invoked skills (Agent Skills format)
+    commands/ponytail*.md             # /ponytail, -review, -audit, -debt, -gain, -help
     README.md
 ```
 
@@ -51,6 +59,8 @@ to a git host and register that URL instead of the local path.
   level deep). Parallelism is decided by the Subagents mode in `~/.junie/settings.json`.
 - **Memory** is not a runtime feature in Junie (the docs' Memory section is still TBD).
   `junie-memory` reproduces Claude Code's approach: a file convention plus an always-loaded
-  guideline, using the agent's normal Read/Write — no server.
+  guideline, using the agent's normal Read/Write — no server. An optional per-machine
+  `UserPromptSubmit` hook (`junie-memory/scripts/recall-memory.sh`) makes recall eager by
+  injecting the index into every prompt; it can't be bundled, so see the extension README.
 
 See each extension's own `README.md` for details and design notes.

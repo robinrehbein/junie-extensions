@@ -6,8 +6,10 @@ their preferences, and durable project context.
 
 ## Recall — at the start of every non-trivial task
 
-1. Read `~/.junie/memory/MEMORY.md` (the index — one line per memory). If it does not exist,
-   there are no memories yet; skip recall.
+1. The memory index lives at `~/.junie/memory/MEMORY.md` (one line per memory). If the
+   optional `UserPromptSubmit` recall hook is installed, that index is already injected into
+   this prompt — skip to step 2. Otherwise read the file now. If it does not exist, there are
+   no memories yet; skip recall.
 2. If an index entry looks relevant to the current task, read that memory file for the full
    fact before acting.
 3. Memories reflect what was true when written. If a memory names a file, command, or flag,

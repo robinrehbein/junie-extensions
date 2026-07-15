@@ -5,7 +5,7 @@
     "email": "robin.rehbein@mimacom.com"
   },
   "metadata": {
-    "description": "Extensions that bring Claude-Code-style capabilities to JetBrains Junie CLI: curated subagent orchestration and cross-session memory.",
+    "description": "Extensions that bring Claude-Code-style capabilities to JetBrains Junie CLI: curated subagent orchestration, cross-session memory, and lazy-senior-dev mode.",
     "version": "0.1.0",
     "homepage": "https://github.com/robinrehbein/junie-extensions"
   },
@@ -43,6 +43,25 @@
         "claude-code",
         "guidelines",
         "recall"
+      ]
+    },
+    {
+      "name": "junie-ponytail",
+      "source": "./extensions/junie-ponytail",
+      "description": "Lazy senior dev mode for Junie CLI — forces the laziest solution that works: YAGNI, reuse, stdlib and native platform features first, one line over fifty. Adapted from DietrichGebert/ponytail (MIT): an always-on guideline, six auto-invoked skills (ponytail, review, audit, debt, gain, help), and matching slash commands.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Dietrich Gebert",
+        "url": "https://github.com/DietrichGebert/ponytail"
+      },
+      "category": "productivity",
+      "keywords": [
+        "ponytail",
+        "yagni",
+        "minimal",
+        "refactoring",
+        "over-engineering",
+        "simplicity"
       ]
     }
   ]

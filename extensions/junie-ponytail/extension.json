@@ -1,0 +1,4 @@
+{
+  "name": "junie-ponytail",
+  "description": "Lazy senior dev mode for Junie CLI — forces the laziest solution that works: YAGNI, reuse, stdlib and native platform features first, one line over fifty. Adapted from DietrichGebert/ponytail (MIT): an always-on guideline, six auto-invoked skills (ponytail, review, audit, debt, gain, help), and matching slash commands."
+}
