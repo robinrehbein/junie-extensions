@@ -31,7 +31,7 @@
     {
       "name": "junie-memory",
       "source": "./extensions/junie-memory",
-      "description": "A cross-session memory for Junie CLI, modeled on Claude Code's memory: an auto-loaded guideline that teaches the agent to recall facts at the start of a task and persist durable ones as files under ~/.junie/memory/, plus /remember and /memories slash commands. File-convention based — no server required.",
+      "description": "A cross-session persona memory for Junie CLI, modeled on Claude Code's memory: an auto-loaded guideline that teaches the agent to recall at the start of a task and persist user preferences and working-style notes (user / feedback / reference) as files under ~/.junie/memory/, plus /remember and /memories slash commands. Always-injected small index — file convention, no server.",
       "version": "0.1.0",
       "author": {
         "name": "Robin Rehbein"
@@ -43,6 +43,24 @@
         "claude-code",
         "guidelines",
         "recall"
+      ]
+    },
+    {
+      "name": "junie-knowledge",
+      "source": "./extensions/junie-knowledge",
+      "description": "A cross-session knowledge store for Junie CLI that cuts agent token usage: an auto-loaded guideline that tells the agent to search before re-reading large files and to save distilled project facts, codebase maps, and session recaps (the single home for durable project facts — persona/preferences stay in junie-memory) via a shared MCP server with semantic retrieval, plus a /knowledge browse command. Distil at save time, recall on demand — backed by SQLite + local embeddings.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Robin Rehbein"
+      },
+      "category": "workflow",
+      "keywords": [
+        "knowledge",
+        "embeddings",
+        "semantic-search",
+        "token-reduction",
+        "memory",
+        "mcp"
       ]
     },
     {

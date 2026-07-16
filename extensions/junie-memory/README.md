@@ -1,13 +1,15 @@
 # junie-memory
 
 Cross-session memory for Junie CLI, modeled on how Claude Code implements memory: a
-**file convention plus an always-loaded protocol** — not a runtime feature. No server.
+**file convention plus an always-loaded protocol** — not a runtime feature. No server. It is the
+**always-present** layer: a small, always-injected index of persona / preferences / working-style.
+Durable technical knowledge lives in the companion [`junie-knowledge`](../junie-knowledge/) store.
 
 ## What's inside
 
 | Piece | Type | Purpose |
 |-------|------|---------|
-| `memory` | guideline | Auto-loaded into every task. Tells the agent to recall from the index and persist durable facts. |
+| `memory` | guideline | Auto-loaded into every task. Tells the agent to recall from the index and persist persona/working-style notes (always-injected small index). |
 | `/remember` | slash command | Explicitly save a fact: `/remember fact="…"`. |
 | `/memories` | slash command | List, inspect, and clean up stored memories. |
 
@@ -19,7 +21,8 @@ Cross-session memory for Junie CLI, modeled on how Claude Code implements memory
   <slug>.md          # one fact per file, with frontmatter (name, description, type)
 ```
 
-`type` is one of `user` / `feedback` / `project` / `reference`.
+`type` is one of `user` / `feedback` / `reference`. (Durable project facts, codebase maps, and
+session recaps live in the **knowledge store** — see [`junie-knowledge`](../junie-knowledge/).)
 
 ## How recall works
 
@@ -95,9 +98,10 @@ Caveats:
   agent following the guideline. For guaranteed zero-effort recall, use the
   `UserPromptSubmit` hook above rather than bloating `~/.junie/AGENTS.md` — only the small
   index is injected, not the whole memory store.
-- **No MCP.** A file convention is enough. An MCP server would only add validated writes and
-  semantic ranking of recall, which matter only once the store grows large — and even then
-  the guideline is still required, because MCP recall is never automatic.
+- **No MCP, by design.** A file convention is enough for the small persona index. Durable
+  project facts, codebase maps, and session recaps belong in the companion **knowledge store**
+  ([`junie-knowledge`](../junie-knowledge/)) — a server-backed, semantic, on-demand layer — not
+  here, so the always-injected index never bloats the prompt.
 - **Guidelines are injected every task.** Extension-bundled guidelines load as reliably as
   `~/.junie/AGENTS.md` (verified: the `memory` guideline is active in every session). The hook
   above then makes recall eager instead of on-demand.

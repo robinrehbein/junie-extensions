@@ -11,6 +11,7 @@ top of those mechanisms.
 |-----------|--------|-----|
 | **junie-subagents** | Claude-Code-style create / process / orchestrate of subagents | 5 focused subagents (`explorer`, `planner`, `implementer`, `reviewer`, `test-runner`) + an orchestration guideline for the main agent |
 | **junie-memory** | Cross-session memory | An auto-loaded guideline + `/remember` and `/memories` commands, backed by files under `~/.junie/memory/` |
+| **junie-knowledge** | Cross-session knowledge store (token reduction) | An auto-loaded guideline + `/knowledge` command, backed by a shared `servers/knowledge-mcp` MCP server (SQLite + local embeddings, semantic top-k search) |
 | **junie-ponytail** | Lazy-senior-dev mode (minimal code, YAGNI) | An always-on guideline + 6 auto-invoked skills + `/ponytail*` commands; adapted from [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) (MIT) |
 | **junie-plane** | Self-hosted Plane ticket tracking | An auto-invoked `plane` skill + `scripts/plane.sh` (`curl`+`jq`) REST client — no MCP |
 | **junie-codeberg** | Codeberg source hosting (PRs, issues, CI) | An auto-invoked `codeberg` skill (`fj` + git) + `scripts/worktree.sh` for in-repo worktrees |
@@ -32,6 +33,11 @@ extensions/
     commands/memories.md              # /memories
     scripts/recall-memory.sh          # optional eager-recall hook (UserPromptSubmit)
     README.md
+  junie-knowledge/
+    extension.json
+    guidelines/knowledge.md           # auto-loaded → search-before-read / distil-on-save
+    commands/knowledge.md             # /knowledge
+    README.md
   junie-ponytail/
     extension.json
     guidelines/ponytail.md            # always-on lazy-dev context
@@ -48,6 +54,11 @@ extensions/
     skills/codeberg/SKILL.md          # auto-invoked → Codeberg/fj workflow
     scripts/worktree.sh               # in-repo .worktrees/ helper (copy into consuming repo's scripts/)
     README.md
+servers/
+  knowledge-mcp/                       # shared MCP server (SQLite + embeddings) backing junie-knowledge
+    src/{index,db,embeddings,tools,selfcheck}.ts
+    deno.json                          # tasks: serve / selfcheck
+    README.md
 ```
 
 ## Install
@@ -59,6 +70,7 @@ junie
 /extensions marketplace add /IdeaProjects/pandora/junie-extensions
 /extensions install junie-subagents
 /extensions install junie-memory
+/extensions install junie-knowledge   # one-time: also register the MCP server — see its README
 ```
 
 Choose **Project** or **User** scope when prompted. To share with the team, push this repo

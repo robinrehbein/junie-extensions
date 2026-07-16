@@ -1,7 +1,8 @@
 {
   "tasks": {
     "serve": "deno run -A src/index.ts",
-    "selfcheck": "deno run -A src/selfcheck.ts"
+    "selfcheck": "deno run -A src/selfcheck.ts",
+    "migrate-memory": "deno run -A src/migrate-memory.ts"
   },
   "compilerOptions": {
     "strict": true

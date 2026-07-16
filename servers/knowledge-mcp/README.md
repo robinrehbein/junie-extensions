@@ -49,6 +49,23 @@ Saves entries across all three kinds and asserts: top-k retrieval, semantic (non
 kind/project scoping, distillation truncation, dedup hint, update-on-existing-id re-embed, and
 delete-cleans-embedding. Uses a throwaway DB, so it never touches your real store.
 
+## Migrate legacy `project` memories (one-shot)
+
+`junie-memory` used to have a `type: project`; durable project facts now belong in this store
+(`kind: project`). This importer moves any existing `type: project` memory files into the knowledge
+store and reports the memory files + `MEMORY.md` index lines to remove. It is a **clean no-op** if
+you have none. Non-project memories (`user` / `feedback` / `reference`) are left untouched.
+
+```sh
+deno task migrate-memory            # dry run — prints the plan, writes nothing
+deno task migrate-memory --commit   # migrate + remove the migrated memory files / index lines
+```
+
+- Reuses `KnowledgeStore` + `selectEmbedder` directly (no MCP round-trip).
+- **Idempotent:** migrated entries get a stable `mem:<slug>` id, so re-runs skip them.
+- **Safe:** malformed/missing frontmatter is skipped with a warning, never thrown.
+- Override the memory dir / DB for testing: `JUNIE_MEMORY_DIR=… KNOWLEDGE_DB=…`.
+
 ## Storage
 
 - DB: `~/.junie/knowledge/knowledge.db` (override with `KNOWLEDGE_DB`)

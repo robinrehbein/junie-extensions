@@ -1,8 +1,12 @@
 # Memory
 
 You have a persistent, cross-session memory stored as files under `~/.junie/memory/`.
-It survives across sessions and projects. Treat it as your long-term notes about the user,
-their preferences, and durable project context.
+It survives across sessions and projects. This is the **always-present** layer: a small, bounded
+index of who the user is, their preferences, and how they want you to work. Its whole value is
+being tiny and injected into (almost) every prompt — so keep it small.
+
+Durable project facts, codebase maps, and session recaps do **not** belong here — they go to the
+**knowledge store** (`junie-knowledge`), which retrieves them on demand. Memory is persona only.
 
 ## Recall — at the start of every non-trivial task
 
@@ -17,10 +21,10 @@ their preferences, and durable project context.
 
 ## Save — when you learn something durable
 
-Save a memory when the user states a lasting preference, gives feedback on how you should
-work, or reveals project context that is not derivable from the code, git history, or
-`AGENTS.md`. Do **not** save one-off task details, or anything already recorded in
-`AGENTS.md` / the repo / git.
+Save a memory when the user states a lasting preference or gives feedback on how you should
+work — persona and working-style only. Do **not** save one-off task details, anything already
+recorded in `AGENTS.md` / the repo / git, or durable project facts (those go to the knowledge
+store — see `junie-knowledge`).
 
 To save:
 
@@ -30,10 +34,10 @@ To save:
    ---
    name: <short-kebab-case-slug>
    description: <one-line summary — used during recall to judge relevance>
-   type: user | feedback | project | reference
+   type: user | feedback | reference
    ---
 
-   <the fact. For feedback/project, add **Why:** and **How to apply:** lines.
+   <the fact. For feedback, add **Why:** and **How to apply:** lines.
    Link related memories with [[their-slug]].>
    ```
 
@@ -53,5 +57,7 @@ To save:
 
 - `user` — who the user is (role, expertise, standing preferences).
 - `feedback` — how you should work (corrections and confirmed approaches); include the why.
-- `project` — ongoing goals or constraints not derivable from the code/git.
 - `reference` — pointers to external resources (URLs, dashboards, tickets).
+
+Durable project facts, decisions, and gotchas are **not** a memory type — save them to the
+knowledge store with `kind: project` (see `junie-knowledge`).

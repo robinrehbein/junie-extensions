@@ -4,9 +4,15 @@ You have a **cross-session knowledge store** backed by the `knowledge` MCP serve
 embeddings). It holds distilled facts about this project and codebase so you stop re-reading
 large files and re-deriving the same things every session.
 
-This **complements** your `~/.junie/memory/` (lightweight personal preferences/notes): use
-**knowledge** for things an agent should *look up* to save tokens — module maps, API contracts,
-decisions, session handoffs.
+The dividing line with `~/.junie/memory/` is sharp and **non-overlapping**:
+
+- **`junie-memory`** (`user` · `feedback` · `reference`) — the always-present persona layer: who the
+  user is, their preferences, and how they want you to work. Injected into almost every prompt, so
+  it stays tiny.
+- **`junie-knowledge`** (`project` · `codebase` · `recap`) — this store: technical knowledge an agent
+  should *look up* on demand to save tokens — module maps, API contracts, decisions, session handoffs.
+
+`project` is **the** home for durable project facts, decisions, and gotchas — never memory.
 
 ## Search — on demand, before you read
 
