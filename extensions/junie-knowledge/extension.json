@@ -1,0 +1,4 @@
+{
+  "name": "junie-knowledge",
+  "description": "A cross-session knowledge store for Junie CLI that cuts agent token usage: an auto-loaded guideline that tells the agent to search before re-reading large files and to save distilled facts (project / codebase maps / session recaps) via a shared MCP server with semantic retrieval, plus a /knowledge browse command. Distil at save time, recall on demand — backed by SQLite + local embeddings."
+}

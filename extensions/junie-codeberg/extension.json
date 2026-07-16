@@ -1,0 +1,4 @@
+{
+  "name": "junie-codeberg",
+  "description": "Drive Codeberg source hosting from Junie CLI via the `fj` (forgejo-cli) plus git — auth, feature branches, in-repo worktrees under .worktrees/, pull requests, squash-merges, issues, labels, and Woodpecker CI status. An auto-invoked skill documents the full workflow; a bundled worktree helper manages .worktrees/."
+}

@@ -12,6 +12,8 @@ top of those mechanisms.
 | **junie-subagents** | Claude-Code-style create / process / orchestrate of subagents | 5 focused subagents (`explorer`, `planner`, `implementer`, `reviewer`, `test-runner`) + an orchestration guideline for the main agent |
 | **junie-memory** | Cross-session memory | An auto-loaded guideline + `/remember` and `/memories` commands, backed by files under `~/.junie/memory/` |
 | **junie-ponytail** | Lazy-senior-dev mode (minimal code, YAGNI) | An always-on guideline + 6 auto-invoked skills + `/ponytail*` commands; adapted from [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) (MIT) |
+| **junie-plane** | Self-hosted Plane ticket tracking | An auto-invoked `plane` skill + `scripts/plane.sh` (`curl`+`jq`) REST client — no MCP |
+| **junie-codeberg** | Codeberg source hosting (PRs, issues, CI) | An auto-invoked `codeberg` skill (`fj` + git) + `scripts/worktree.sh` for in-repo worktrees |
 
 ## Layout
 
@@ -35,6 +37,16 @@ extensions/
     guidelines/ponytail.md            # always-on lazy-dev context
     skills/ponytail*/SKILL.md         # 6 auto-invoked skills (Agent Skills format)
     commands/ponytail*.md             # /ponytail, -review, -audit, -debt, -gain, -help
+    README.md
+  junie-plane/
+    extension.json
+    skills/plane/SKILL.md             # auto-invoked → Plane command surface
+    scripts/plane.sh                  # curl+jq REST client (copy into consuming repo's scripts/)
+    README.md
+  junie-codeberg/
+    extension.json
+    skills/codeberg/SKILL.md          # auto-invoked → Codeberg/fj workflow
+    scripts/worktree.sh               # in-repo .worktrees/ helper (copy into consuming repo's scripts/)
     README.md
 ```
 

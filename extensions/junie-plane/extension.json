@@ -1,0 +1,4 @@
+{
+  "name": "junie-plane",
+  "description": "Drive a self-hosted Plane issue/ticket tracker from Junie CLI via a thin scripts/plane.sh helper (curl + jq) — fetch, create, move, comment on, and triage issues and cycles. No MCP. An auto-invoked skill documents the workspace/project/state model; the bundled script does the REST calls. Pre-configured for the Noah workspace — edit the script header to point it at your own instance."
+}

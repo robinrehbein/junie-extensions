@@ -1,0 +1,9 @@
+{
+  "tasks": {
+    "serve": "deno run -A src/index.ts",
+    "selfcheck": "deno run -A src/selfcheck.ts"
+  },
+  "compilerOptions": {
+    "strict": true
+  }
+}

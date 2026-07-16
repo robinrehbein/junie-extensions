@@ -2,7 +2,7 @@
   "name": "junie-extensions",
   "owner": {
     "name": "Robin Rehbein",
-    "email": "robin.rehbein@mimacom.com"
+    "email": "robdeerleg@gmail.com"
   },
   "metadata": {
     "description": "Extensions that bring Claude-Code-style capabilities to JetBrains Junie CLI: curated subagent orchestration, cross-session memory, and lazy-senior-dev mode.",
@@ -62,6 +62,40 @@
         "refactoring",
         "over-engineering",
         "simplicity"
+      ]
+    },
+    {
+      "name": "junie-plane",
+      "source": "./extensions/junie-plane",
+      "description": "Drive a self-hosted Plane issue/ticket tracker from Junie CLI via a thin scripts/plane.sh helper (curl + jq) — fetch, create, move, comment on, and triage issues and cycles. No MCP. An auto-invoked skill documents the workspace/project/state model.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Robin Rehbein"
+      },
+      "category": "workflow",
+      "keywords": [
+        "plane",
+        "tickets",
+        "issues",
+        "tracking",
+        "project-management"
+      ]
+    },
+    {
+      "name": "junie-codeberg",
+      "source": "./extensions/junie-codeberg",
+      "description": "Drive Codeberg source hosting from Junie CLI via the `fj` (forgejo-cli) plus git — auth, feature branches, in-repo worktrees under .worktrees/, pull requests, squash-merges, issues, labels, and Woodpecker CI status.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Robin Rehbein"
+      },
+      "category": "workflow",
+      "keywords": [
+        "codeberg",
+        "forgejo",
+        "git",
+        "pull-requests",
+        "ci"
       ]
     }
   ]
