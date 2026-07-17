@@ -18,10 +18,13 @@ fj whoami        # current authed user (inferred from origin)
 fj auth list     # all logged-in instances
 ```
 
-To (re)authenticate headlessly (token from Codeberg → Settings → Applications):
+To (re)authenticate headlessly (token from Codeberg → Settings → Applications). The same token
+must be **exported as `CODEBERG_TOKEN`** — `fj auth` reads it once at login, and the issue-label
+REST fallback below reuses it from the env:
 
 ```bash
-echo "$TOKEN" | fj auth add-key birneklub   # no env-var auth in fj v0.3.0
+export CODEBERG_TOKEN=<token>
+echo "$CODEBERG_TOKEN" | fj auth add-key birneklub   # host-based login (run once); env reused by the REST fallback
 ```
 
 `fj` infers the repo from the local `origin` remote, so inside a clone you run bare
@@ -84,7 +87,7 @@ fj issue search -s open
 ```
 
 `fj` **cannot label issues** (only PRs and org-level label definitions). Fallback via the
-Forgejo REST API:
+Forgejo REST API (uses the same `$CODEBERG_TOKEN` exported above):
 
 ```bash
 curl -fsS -X POST -H "Authorization: token $CODEBERG_TOKEN" \

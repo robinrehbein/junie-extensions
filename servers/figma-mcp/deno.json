@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "serve": "deno run -A src/index.ts",
+    "serve": "deno run --allow-net=api.figma.com --allow-env=FIGMA_TOKEN,FIGMA_ACCESS_TOKEN src/index.ts",
     "selfcheck": "deno run -A src/selfcheck.ts"
   },
   "compilerOptions": {

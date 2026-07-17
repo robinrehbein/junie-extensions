@@ -13,10 +13,10 @@ description: >
 Display this scoreboard when invoked. One-shot: do NOT change mode, write flag
 files, or persist anything.
 
-The figures are the published benchmark medians (5 everyday tasks: email
-validator, debounce, CSV sum, countdown timer, rate limiter; three models:
-Haiku, Sonnet, Opus). They are measured, not computed from the current repo.
-Source: `benchmarks/` and the README.
+The figures are the **upstream** benchmark medians (5 everyday tasks: email validator, debounce,
+CSV sum, countdown timer, rate limiter; three models: Haiku, Sonnet, Opus), from the ponytail
+project (https://github.com/DietrichGebert/ponytail). They are measured upstream, not computed
+from this repo, and are not shipped here — cite the upstream repo, not a local path.
 
 ## Scoreboard
 

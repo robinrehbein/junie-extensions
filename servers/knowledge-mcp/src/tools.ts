@@ -81,8 +81,15 @@ export function createHandlers(store: KnowledgeStore, embedder: Embedder): Handl
         truncated = true;
       }
 
-      const existing = typeof args.id === "string" && args.id ? store.getEntry(args.id) : null;
-      const id = existing?.id ?? (typeof args.id === "string" && args.id ? args.id : ulid());
+      // Trust boundary: an LLM-supplied id may collide with an unrelated entry. Only reuse an id
+      // to UPDATE when it's the same kind+project; if the id is taken by a different entry, mint a
+      // fresh id instead of clobbering it (the UPSERT would otherwise overwrite the unrelated row).
+      const requestedId = typeof args.id === "string" && args.id ? args.id : null;
+      const candidate = requestedId ? store.getEntry(requestedId) : null;
+      const existing = candidate && candidate.kind === kind && candidate.project === project
+        ? candidate
+        : null;
+      const id = existing?.id ?? (candidate ? ulid() : (requestedId ?? ulid()));
       const [vec] = await embedder.embed([`${title}\n${body}`]);
       const dedup_hint = await dedup(kind, project, vec, id);
 
@@ -180,9 +187,18 @@ export function createHandlers(store: KnowledgeStore, embedder: Embedder): Handl
 
     export_knowledge(args) {
       const entries = store.listEntries({ limit: 5000 });
-      const path = typeof args.path === "string" && args.path.trim()
-        ? args.path.trim()
-        : `${Deno.env.get("HOME") ?? Deno.env.get("USERPROFILE") ?? "."}/.junie/knowledge/export.md`;
+      const dir = `${Deno.env.get("HOME") ?? Deno.env.get("USERPROFILE") ?? "."}/.junie/knowledge`;
+      // Trust boundary: `path` is LLM-controlled — confine the write under the knowledge dir
+      // (reject absolutes / parent traversal) so an injected prompt can't clobber dotfiles.
+      let path = `${dir}/export.md`;
+      if (typeof args.path === "string" && args.path.trim()) {
+        const requested = args.path.trim();
+        if (requested.startsWith("/") || requested.includes("..")) {
+          throw new Error("export path must be relative to ~/.junie/knowledge and contain no '..'");
+        }
+        path = `${dir}/${requested}`;
+      }
+      Deno.mkdirSync(dir, { recursive: true });
       const md: string[] = ["# Knowledge export", "", `_Generated ${now()} · ${entries.length} entries_`, ""];
       for (const k of KINDS) {
         const subset = entries.filter((e) => e.kind === k);

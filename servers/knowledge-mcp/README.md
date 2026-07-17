@@ -36,6 +36,10 @@ deno task serve
 deno run -A src/index.ts
 ```
 
+> The server needs `-A` only because the **local** embedder loads a native `onnxruntime-node`
+> binding; switch to an API provider (`KNOWLEDGE_EMBED_PROVIDER=openai|voyage|zai`) before
+> narrowing permissions.
+
 First run downloads the local embedding model (~25MB) into `~/.junie/knowledge/models`; subsequent
 runs are offline.
 
@@ -99,7 +103,8 @@ silently skips dimension-mismatched candidates instead of returning garbage simi
 
 ## Register in Junie
 
-Add to `~/.junie/config.json` (`mcpServers`), using the absolute path on your machine:
+Add to `~/.junie/mcp/mcp.json` (user scope; or `<project>/.junie/mcp/mcp.json` for project
+scope), under `mcpServers`, using the absolute path on your machine:
 
 ```json
 {

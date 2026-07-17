@@ -38,9 +38,10 @@ decisions, codebase maps, and session recaps → knowledge. `project` facts live
 
 ## One-time setup: register the MCP server
 
-Junie loads MCP servers from `~/.junie/config.json` (`mcpServers`). The server lives in this repo at
-[`../servers/knowledge-mcp/`](../servers/knowledge-mcp/). Register it with the **absolute path** on
-your machine:
+Junie loads MCP servers from `~/.junie/mcp/mcp.json` (user scope) or
+`<project>/.junie/mcp/mcp.json` (project scope), under `mcpServers`. The server lives in this repo
+at [`../servers/knowledge-mcp/`](../servers/knowledge-mcp/). Register it with the **absolute path**
+on your machine:
 
 ```json
 {

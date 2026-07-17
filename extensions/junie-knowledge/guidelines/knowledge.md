@@ -29,9 +29,8 @@ otherwise read code or dig through history.
 
 ## Save — after you distil
 
-When you learn something durable, compress it to **a few lines** and call
-`save_knowledge({ kind, title, body, tags?, project? })`. Distilling at save time is where the
-tokens are saved — a 200-line file becomes a 3-line note.
+When you learn something durable, call `save_knowledge({ kind, title, body, tags?, project? })`.
+Distilling at save time is where the tokens are saved (see **Distil honestly** below).
 
 Save when you've:
 

@@ -33,13 +33,24 @@ export function dbPath(): string {
 
 type Row = Record<string, unknown>;
 
+// ponytail: tolerate a corrupt tags/vec cell instead of throwing inside a map() that would
+// kill every search/list/export. Bad vec → [] (cosine skips it); bad tags → [].
+function safeJsonArray<T>(s: unknown, fallback: T[]): T[] {
+  try {
+    const v = JSON.parse(String(s));
+    return Array.isArray(v) ? v as T[] : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 function toEntry(r: Row): Entry {
   return {
     id: String(r.id),
     kind: String(r.kind),
     title: String(r.title),
     body: String(r.body),
-    tags: r.tags ? JSON.parse(String(r.tags)) as string[] : [],
+    tags: safeJsonArray<string>(r.tags, []),
     project: r.project == null ? null : String(r.project),
     source: r.source == null ? null : String(r.source),
     token_est: Number(r.token_est),
@@ -176,7 +187,7 @@ export class KnowledgeStore {
     if (where.length) sql += " WHERE " + where.join(" AND ");
     return (this.db.prepare(sql).all(...args) as Row[]).map((r) => ({
       ...toEntry(r),
-      vec: JSON.parse(String(r.vec)) as number[],
+      vec: safeJsonArray<number>(r.vec, []),
     }));
   }
 

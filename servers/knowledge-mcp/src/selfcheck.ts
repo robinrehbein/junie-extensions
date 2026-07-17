@@ -122,6 +122,21 @@ console.log("\n[bonus] list with tag filter");
 const authTagged = h.list_knowledge({ tag: "auth" }) as any[];
 assert(authTagged.length >= 1 && authTagged.every((e) => e.tags.includes("auth")), "tag filter returns only matching entries");
 
+console.log("\n[bonus] cross-kind id collision does not clobber the existing entry");
+const stackBefore = h.get_knowledge({ id: stack.id }) as any;
+const countBefore = store.count();
+const collide = await save({
+  id: stack.id,      // belongs to a `project` entry
+  kind: "codebase",  // different kind → must NOT reuse the id
+  title: "tech stack (codebase)",
+  body: "Attempt to overwrite the project entry as a codebase entry.",
+  project: "demo",
+});
+assert(collide.id !== stack.id, "a colliding id (different kind) gets a fresh id, not a clobber");
+const stackAfter = h.get_knowledge({ id: stack.id }) as any;
+assert(stackAfter.kind === "project" && stackAfter.body === stackBefore.body, "original entry is untouched");
+assert(store.count() === countBefore + 1, "a new entry is created, not an overwrite");
+
 store.close();
 Deno.removeSync(tmpDb);
 Deno.removeSync(tmpModels, { recursive: true });

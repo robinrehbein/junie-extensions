@@ -109,7 +109,6 @@ case "$cmd" in
     ;;
   issues)
     pid_="$(pid "${1:-}")"
-    local states
     states="$(api GET "/projects/$pid_/states/" | resultsjq)"
     api GET "/projects/$pid_/issues/?per_page=100" | resultsjq \
       | jq -r --argjson smap "$states" '
@@ -140,6 +139,7 @@ case "$cmd" in
     ref="${1:?ref required}"; proj="${2:-}"
     pid_="$(pid "$proj")"
     iid="$(resolve_issue "$ref" "$proj")"
+    [[ -n "$iid" ]] || { echo "issue not found: $ref" >&2; exit 1; }
     api GET "/projects/$pid_/issues/$iid/comments/" | resultsjq \
       | jq -r '.[] | "--- \(.created_at) ---\n\(.comment_html // .comment // "")\n"' | strip_html
     ;;
@@ -147,13 +147,15 @@ case "$cmd" in
     ref="${1:?ref required}"; proj="${2:-}"; text="${3:?text required}"
     pid_="$(pid "$proj")"
     iid="$(resolve_issue "$ref" "$proj")"
+    [[ -n "$iid" ]] || { echo "issue not found: $ref" >&2; exit 1; }
     body="$(jq -n --arg c "<p>$text</p>" '{comment_html:$c}')"
-    api POST "/projects/$pid_/issues/$iid/comments/" "$body" | jq '{id, created_at}' || true
+    api POST "/projects/$pid_/issues/$iid/comments/" "$body" | jq '{id, created_at}'
     ;;
   move)
     ref="${1:?ref required}"; proj="${2:-}"; sname="${3:?state name required}"
     pid_="$(pid "$proj")"
     iid="$(resolve_issue "$ref" "$proj")"
+    [[ -n "$iid" ]] || { echo "issue not found: $ref" >&2; exit 1; }
     sid="$(state_uuid "$pid_" "$sname")"
     [[ -n "$sid" ]] || { echo "state not found: $sname (run: scripts/plane.sh states)" >&2; exit 1; }
     body="$(jq -n --arg s "$sid" '{state:$s}')"
@@ -183,11 +185,12 @@ case "$cmd" in
         + (if $prio!="" then {priority:$prio} else {} end)
         + (if $assignee!="" then {assignees:[$assignee]} else {} end)
         + (if $label!="" then {labels:[$label]} else {} end)')"
-    api POST "/projects/$pid_/issues/" "$body" | jq '{id, name, sequence_id}' || true
+    api POST "/projects/$pid_/issues/" "$body" | jq '{id, name, sequence_id}'
     ;;
   update-issue)
     ref="${1:?ref required}"; proj="${2:-}"; shift 2
     pid_="$(pid "$proj")"; iid="$(resolve_issue "$ref" "$proj")"
+    [[ -n "$iid" ]] || { echo "issue not found: $ref" >&2; exit 1; }
     sname=""; priority=""
     while [[ $# -gt 0 ]]; do case "$1" in --state) sname="$2"; shift 2;; --priority) priority="$2"; shift 2;; *) echo "unknown arg: $1" >&2; exit 1;; esac; done
     sid=""; [[ -n "$sname" ]] && sid="$(state_uuid "$pid_" "$sname")"

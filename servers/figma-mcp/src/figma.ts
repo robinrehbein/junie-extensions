@@ -11,6 +11,8 @@ const FILE_ROUTE_PREFIXES = new Set([
   "slideshare",
 ]);
 
+const IMAGE_FORMATS = new Set(["png", "jpg", "svg", "pdf"]);
+
 export interface ParsedFigma {
   fileKey: string;
   /** API-form node ids (colon-separated), e.g. ["1123:747"]. Empty if the URL has no node-id. */
@@ -131,8 +133,14 @@ export const Handlers: Record<
     if (!nodeIds.length) {
       throw new Error("No node-id in the URL — copy a link to a specific frame (needs ?node-id=…).");
     }
-    const format = (str(args.format) ?? "png") as "png" | "jpg" | "svg" | "pdf";
-    const scale = num(args.scale) ?? 2;
+    // Trust boundary: format + scale are LLM-controlled — validate against the enum and clamp
+    // to Figma's supported range before forwarding to the API.
+    const format = str(args.format) ?? "png";
+    if (!IMAGE_FORMATS.has(format)) {
+      throw new Error(`format must be one of: ${[...IMAGE_FORMATS].join(", ")}`);
+    }
+    const rawScale = num(args.scale) ?? 2;
+    const scale = Math.min(4, Math.max(0.01, Number.isFinite(rawScale) ? rawScale : 2));
     const q = new URLSearchParams({
       ids: nodeIds.join(","),
       format,
