@@ -32,8 +32,8 @@ otherwise read code or dig through history.
 
 `get_knowledge({ id })` fetches one entry by its exact `id`. Only pass an `id` **you received
 earlier in this same session** — from a `save_knowledge` / `search_knowledge` / `list_knowledge`
-result. A `get` on an `id` that isn't in the store returns `{ found: false }` (the entry isn't
-lost — the id was wrong).
+result. A `get` on an `id` that isn't in the store returns `{ found: false }` (the entry isn't lost
+— the id was wrong).
 
 To **recover a prior session's recap** (whose `id` the current session never saw), don't guess an
 id: run `search_knowledge` / `list_knowledge` first, then `get_knowledge` on the id they return.

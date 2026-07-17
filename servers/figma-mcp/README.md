@@ -34,8 +34,9 @@ The URL is any Figma share link that includes a `node-id`, e.g.
 1. **Create a PAT.** Figma → Settings → Account → **Personal access tokens** → new token (any scope
    that can read the file; "File content" read is enough). Copy it — it's shown once.
 
-2. **Register the server** in your MCP config. Junie reads MCP servers from `.junie/mcp/mcp.json`
-   (project) or `~/.junie/mcp/mcp.json` (user):
+2. **Register the server** in your MCP config, at **project scope**. Junie reads MCP servers from
+   `<project>/.junie/mcp/mcp.json`; user scope (`~/.junie/mcp/mcp.json`) is also supported but
+   project scope is the recommended default:
 
    ```json
    {

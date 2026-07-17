@@ -12,7 +12,7 @@ import {
 import { Handlers, TOOL_DEFS } from "./figma.ts";
 
 const server = new Server(
-  { name: "figma-mcp", version: "0.1.0" },
+  { name: "Figma MCP", version: "0.1.0" },
   { capabilities: { tools: {} } },
 );
 

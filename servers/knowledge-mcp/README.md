@@ -103,8 +103,9 @@ silently skips dimension-mismatched candidates instead of returning garbage simi
 
 ## Register in Junie
 
-Add to `~/.junie/mcp/mcp.json` (user scope; or `<project>/.junie/mcp/mcp.json` for project scope),
-under `mcpServers`, using the absolute path on your machine:
+Add to `<project>/.junie/mcp/mcp.json` (project scope), under `mcpServers`, using the absolute path
+on your machine. (User scope `~/.junie/mcp/mcp.json` is also supported by Junie, but project scope
+is the recommended default.)
 
 ```json
 {

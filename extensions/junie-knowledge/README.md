@@ -35,12 +35,12 @@ They're complementary and **non-overlapping by construction** — each fact has 
 The one-line rule: persona / preferences / working-style → memory; durable project facts, decisions,
 codebase maps, and session recaps → knowledge. `project` facts live **only** here.
 
-## One-time setup: register the MCP server
+## One-time setup: register the MCP server (project scope)
 
-Junie loads MCP servers from `~/.junie/mcp/mcp.json` (user scope) or `<project>/.junie/mcp/mcp.json`
-(project scope), under `mcpServers`. The server lives in this repo at
-[`../servers/knowledge-mcp/`](../servers/knowledge-mcp/). Register it with the **absolute path** on
-your machine:
+Junie loads MCP servers from `<project>/.junie/mcp/mcp.json`, under `mcpServers`. This extension
+targets **project scope** so the server lives with the repo and stays isolated per project. The
+server source lives in this repo at [`../servers/knowledge-mcp/`](../servers/knowledge-mcp/); point
+it there with the **absolute path** on your machine:
 
 ```json
 {

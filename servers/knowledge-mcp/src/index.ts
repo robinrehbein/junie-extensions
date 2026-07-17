@@ -16,7 +16,7 @@ const embedder = selectEmbedder();
 const handlers = createHandlers(store, embedder);
 
 const server = new Server(
-  { name: "knowledge-mcp", version: "0.1.0" },
+  { name: "Knowledge MCP", version: "0.1.0" },
   { capabilities: { tools: {} } },
 );
 

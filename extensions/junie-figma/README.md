@@ -20,7 +20,7 @@ server 403s.
 1. **Create a Figma Personal Access Token** (Settings → Account → Personal access tokens) and
    register the MCP server. Full steps are in the
    [server README](../../servers/figma-mcp/README.md#one-time-setup). In short, add to
-   `~/.junie/mcp/mcp.json` (or `.junie/mcp/mcp.json`):
+   `<project>/.junie/mcp/mcp.json` (project scope):
 
    ```json
    {
