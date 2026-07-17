@@ -12,6 +12,7 @@ top of those mechanisms.
 | **junie-subagents** | Claude-Code-style create / process / orchestrate of subagents | 5 focused subagents (`explorer`, `planner`, `implementer`, `reviewer`, `test-runner`) + an orchestration guideline for the main agent |
 | **junie-memory** | Cross-session memory | An auto-loaded guideline + `/remember` and `/memories` commands, backed by files under `~/.junie/memory/` |
 | **junie-knowledge** | Cross-session knowledge store (token reduction) | An auto-loaded guideline + `/knowledge` command, backed by a shared `servers/knowledge-mcp` MCP server (SQLite + local embeddings, semantic top-k search) |
+| **junie-figma** | Figma design → context (paste a link) | An auto-invoked `figma` skill, backed by a `servers/figma-mcp` MCP server (Figma REST API + Personal Access Token) — works around the remote Figma MCP 403'ing Junie |
 | **junie-ponytail** | Lazy-senior-dev mode (minimal code, YAGNI) | An always-on guideline + 6 auto-invoked skills + `/ponytail*` commands; adapted from [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) (MIT) |
 | **junie-plane** | Self-hosted Plane ticket tracking | An auto-invoked `plane` skill + `scripts/plane.sh` (`curl`+`jq`) REST client — no MCP |
 | **junie-codeberg** | Codeberg source hosting (PRs, issues, CI) | An auto-invoked `codeberg` skill (`fj` + git) + `scripts/worktree.sh` for in-repo worktrees |
@@ -38,6 +39,10 @@ extensions/
     extension.json
     guidelines/knowledge.md           # auto-loaded → search-before-read / distil-on-save
     commands/knowledge.md             # /knowledge
+    README.md
+  junie-figma/
+    extension.json
+    skills/figma/SKILL.md             # auto-invoked → call figma MCP tools on a pasted link
     README.md
   junie-ponytail/
     extension.json
@@ -66,6 +71,10 @@ servers/
     src/{index,db,embeddings,tools,selfcheck}.ts
     deno.json                          # tasks: serve / selfcheck
     README.md
+  figma-mcp/                           # MCP server (Figma REST API + PAT) backing junie-figma
+    src/{figma,index,selfcheck}.ts
+    deno.json                          # tasks: serve / selfcheck
+    README.md
 ```
 
 ## Install
@@ -78,6 +87,7 @@ junie
 /extensions install junie-subagents
 /extensions install junie-memory
 /extensions install junie-knowledge   # one-time: also register the MCP server — see its README
+/extensions install junie-figma        # one-time: also register the MCP server — see its README
 /extensions install junie-goal-loop
 ```
 

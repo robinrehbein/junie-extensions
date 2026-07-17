@@ -1,0 +1,4 @@
+{
+  "name": "junie-figma",
+  "description": "Figma design access for Junie CLI via a local MCP server backed by Figma's REST API + a Personal Access Token — the remote Figma MCP 403s Junie (not on Figma's client catalog). An auto-invoked `figma` skill teaches the agent to call `get_figma_design` / `get_figma_image` with a pasted Figma URL to pull the design spec and a render. Paste a link, get the design."
+}
