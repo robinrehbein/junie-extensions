@@ -1,5 +1,5 @@
 // MCP tool handlers + their JSON-Schema definitions for tools/list.
-import { KnowledgeStore, KINDS, type Entry, type Kind } from "./db.ts";
+import { type Entry, type Kind, KINDS, KnowledgeStore } from "./db.ts";
 import type { Embedder } from "./embeddings.ts";
 
 export const MAX_BODY = 4000; // ~1k tokens — distillation target is "a few lines"
@@ -92,7 +92,9 @@ export function createHandlers(store: KnowledgeStore, embedder: Embedder): Handl
       const tags: string[] = Array.isArray(args.tags)
         ? args.tags.filter((t): t is string => typeof t === "string")
         : [];
-      const project = typeof args.project === "string" && args.project.trim() ? args.project.trim() : null;
+      const project = typeof args.project === "string" && args.project.trim()
+        ? args.project.trim()
+        : null;
       const source = typeof args.source === "string" && args.source.trim()
         ? args.source.trim()
         : (Deno.env.get("KNOWLEDGE_SOURCE") ?? "junie");
@@ -146,7 +148,9 @@ export function createHandlers(store: KnowledgeStore, embedder: Embedder): Handl
       const query = typeof args.query === "string" ? args.query.trim() : "";
       if (!query) throw new Error("query is required");
       const kind = asKind(args.kind);
-      const project = typeof args.project === "string" && args.project.trim() ? args.project.trim() : null;
+      const project = typeof args.project === "string" && args.project.trim()
+        ? args.project.trim()
+        : null;
       const k = Number.isInteger(args.k) && (args.k as number) > 0
         ? Math.min(args.k as number, MAX_K)
         : DEFAULT_K;
@@ -177,20 +181,29 @@ export function createHandlers(store: KnowledgeStore, embedder: Embedder): Handl
     get_knowledge(args) {
       const id = typeof args.id === "string" ? args.id : "";
       if (!id) throw new Error("id is required");
-      return store.getEntry(id);
+      // Not-found → { found: false }, not bare null, so a missing id is never mistaken for a
+      // store failure. Recover a prior-session id via search/list before calling this.
+      return store.getEntry(id) ?? { found: false };
     },
 
     list_knowledge(args) {
       const kind = asKind(args.kind);
-      const project = typeof args.project === "string" && args.project.trim() ? args.project.trim() : null;
-      const tag = typeof args.tag === "string" && args.tag.trim() ? args.tag.trim().toLowerCase() : null;
+      const project = typeof args.project === "string" && args.project.trim()
+        ? args.project.trim()
+        : null;
+      const tag = typeof args.tag === "string" && args.tag.trim()
+        ? args.tag.trim().toLowerCase()
+        : null;
       const limit = Number.isInteger(args.limit) && (args.limit as number) > 0
         ? Math.min(args.limit as number, 500)
         : 50;
       // tag lives in a JSON column — filter in JS (cheap at single-user scale).
       let entries = store.listEntries({ kind, project, limit: tag ? 500 : limit });
       if (tag) {
-        entries = entries.filter((e) => e.tags.some((t) => t.toLowerCase() === tag)).slice(0, limit);
+        entries = entries.filter((e) => e.tags.some((t) => t.toLowerCase() === tag)).slice(
+          0,
+          limit,
+        );
       }
       return entries.map((e) => ({
         id: e.id,
@@ -224,7 +237,12 @@ export function createHandlers(store: KnowledgeStore, embedder: Embedder): Handl
         path = `${dir}/${requested}`;
       }
       Deno.mkdirSync(dir, { recursive: true });
-      const md: string[] = ["# Knowledge export", "", `_Generated ${now()} · ${entries.length} entries_`, ""];
+      const md: string[] = [
+        "# Knowledge export",
+        "",
+        `_Generated ${now()} · ${entries.length} entries_`,
+        "",
+      ];
       for (const k of KINDS) {
         const subset = entries.filter((e) => e.kind === k);
         if (!subset.length) continue;
@@ -270,9 +288,19 @@ export const TOOL_DEFS: ToolDef[] = [
         title: { type: "string", description: "Short human-readable title" },
         body: { type: "string", description: "Distilled content (a few lines)" },
         tags: stringArray,
-        project: { type: "string", description: "Optional scope (project id / cwd) to avoid cross-project leakage" },
-        id: { type: "string", description: "Optional; if it exists, the entry is updated and re-embedded" },
-        source: { type: "string", description: "Optional provenance (agent name). Defaults to KNOWLEDGE_SOURCE env or 'junie'" },
+        project: {
+          type: "string",
+          description: "Optional scope (project id / cwd) to avoid cross-project leakage",
+        },
+        id: {
+          type: "string",
+          description: "Optional; if it exists, the entry is updated and re-embedded",
+        },
+        source: {
+          type: "string",
+          description:
+            "Optional provenance (agent name). Defaults to KNOWLEDGE_SOURCE env or 'junie'",
+        },
       },
       required: ["kind", "title", "body"],
       additionalProperties: false,
@@ -331,7 +359,8 @@ export const TOOL_DEFS: ToolDef[] = [
   },
   {
     name: "export_knowledge",
-    description: "Export the whole store to a Markdown file (backup / portability). Defaults to ~/.junie/knowledge/export.md.",
+    description:
+      "Export the whole store to a Markdown file (backup / portability). Defaults to ~/.junie/knowledge/export.md.",
     inputSchema: {
       type: "object",
       properties: { path: { type: "string" } },

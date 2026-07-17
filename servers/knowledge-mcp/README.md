@@ -1,9 +1,9 @@
 # knowledge-mcp
 
-A shared MCP server that owns a **cross-session knowledge store** (SQLite + embeddings) and
-exposes tools to save, **semantically search**, and manage distilled knowledge. It is the core
-of the `junie-knowledge` extension and is designed so Claude Code and Pi can reuse the **same
-server** later.
+A shared MCP server that owns a **cross-session knowledge store** (SQLite + embeddings) and exposes
+tools to save, **semantically search**, and manage distilled knowledge. It is the core of the
+`junie-knowledge` extension and is designed so Claude Code and Pi can reuse the **same server**
+later.
 
 The token-saving mechanism: knowledge is **distilled to a few lines at save time** and **retrieved
 on demand** (top-k semantic search), so an agent stops re-reading large files and re-deriving the
@@ -11,17 +11,17 @@ same facts every session.
 
 ## Tools
 
-| Tool | Purpose |
-|------|---------|
-| `save_knowledge` | Distill + store an entry (embeds it). Returns `id`, `token_est`, and a `dedup_hint`. |
-| `search_knowledge` | Semantic top-k over the store (default `k=5`). Optional `kind`/`project` scope. |
-| `get_knowledge` | Fetch one entry by `id`. |
-| `list_knowledge` | List entries, filter by `kind`/`tag`/`project`. |
-| `delete_knowledge` | Remove an entry **and its embedding**. |
-| `export_knowledge` | Dump the store to Markdown (backup / portability). |
+| Tool               | Purpose                                                                              |
+| ------------------ | ------------------------------------------------------------------------------------ |
+| `save_knowledge`   | Distill + store an entry (embeds it). Returns `id`, `token_est`, and a `dedup_hint`. |
+| `search_knowledge` | Semantic top-k over the store (default `k=5`). Optional `kind`/`project` scope.      |
+| `get_knowledge`    | Fetch one entry by `id`.                                                             |
+| `list_knowledge`   | List entries, filter by `kind`/`tag`/`project`.                                      |
+| `delete_knowledge` | Remove an entry **and its embedding**.                                               |
+| `export_knowledge` | Dump the store to Markdown (backup / portability).                                   |
 
-**Kinds:** `project` (durable dev facts / decisions), `codebase` (module maps / API contracts /
-data flow), `recap` (session handoff: what was done, open threads).
+**Kinds:** `project` (durable dev facts / decisions), `codebase` (module maps / API contracts / data
+flow), `recap` (session handoff: what was done, open threads).
 
 ## Requirements
 
@@ -37,8 +37,8 @@ deno run -A src/index.ts
 ```
 
 > The server needs `-A` only because the **local** embedder loads a native `onnxruntime-node`
-> binding; switch to an API provider (`KNOWLEDGE_EMBED_PROVIDER=openai|voyage|zai`) before
-> narrowing permissions.
+> binding; switch to an API provider (`KNOWLEDGE_EMBED_PROVIDER=openai|voyage|zai`) before narrowing
+> permissions.
 
 First run downloads the local embedding model (~25MB) into `~/.junie/knowledge/models`; subsequent
 runs are offline.
@@ -84,16 +84,16 @@ deno task migrate-memory --commit   # migrate + remove the migrated memory files
 
 Controlled by env vars:
 
-| Variable | Values | Default |
-|----------|--------|---------|
-| `KNOWLEDGE_EMBED_PROVIDER` | `local` \| `openai` \| `voyage` \| `zai` | `local` |
-| `KNOWLEDGE_EMBED_MODEL` | override the model id | provider default |
-| `KNOWLEDGE_SOURCE` | default `source` provenance tag | `junie` |
+| Variable                   | Values                                   | Default          |
+| -------------------------- | ---------------------------------------- | ---------------- |
+| `KNOWLEDGE_EMBED_PROVIDER` | `local` \| `openai` \| `voyage` \| `zai` | `local`          |
+| `KNOWLEDGE_EMBED_MODEL`    | override the model id                    | provider default |
+| `KNOWLEDGE_SOURCE`         | default `source` provenance tag          | `junie`          |
 
 - **`local`** (default): `@huggingface/transformers` v3 `all-MiniLM-L6-v2`, 384-dim, runs on the
   pure-WASM ONNX backend so nothing native loads under Deno. Offline and free.
-  > The v2 `@xenova/transformers` package was rejected: it eagerly loads native `sharp`, which
-  > fails to build under Deno.
+  > The v2 `@xenova/transformers` package was rejected: it eagerly loads native `sharp`, which fails
+  > to build under Deno.
 - **`openai`**: `text-embedding-3-small` (1536-dim). Needs `OPENAI_API_KEY`.
 - **`voyage`**: `voyage-3-lite` (512-dim). Needs `VOYAGE_API_KEY`.
 - **`zai`**: `embedding-3` (1024-dim). Needs `Z_AI_API_KEY`.
@@ -103,8 +103,8 @@ silently skips dimension-mismatched candidates instead of returning garbage simi
 
 ## Register in Junie
 
-Add to `~/.junie/mcp/mcp.json` (user scope; or `<project>/.junie/mcp/mcp.json` for project
-scope), under `mcpServers`, using the absolute path on your machine:
+Add to `~/.junie/mcp/mcp.json` (user scope; or `<project>/.junie/mcp/mcp.json` for project scope),
+under `mcpServers`, using the absolute path on your machine:
 
 ```json
 {

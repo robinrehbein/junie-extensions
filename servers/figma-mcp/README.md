@@ -1,24 +1,26 @@
 # figma-mcp
 
-A local MCP server that gives Junie **Figma design access via the REST API + a Personal Access
-Token (PAT)** — the same "paste a Figma link, get the design" workflow as the remote Figma MCP,
-without OAuth.
+A local MCP server that gives Junie **Figma design access via the REST API + a Personal Access Token
+(PAT)** — the same "paste a Figma link, get the design" workflow as the remote Figma MCP, without
+OAuth.
 
 ## Why this exists
 
-The remote Figma MCP server (`https://mcp.figma.com/mcp`) refuses OAuth registration (`DCR failed
-with 403 Forbidden`) for any client not on Figma's catalog: only Cursor, VS Code, Claude Code,
-Codex, and Xcode are allowlisted. **Junie is not on the list**, so the remote server can't be used.
+The remote Figma MCP server (`https://mcp.figma.com/mcp`) refuses OAuth registration
+(`DCR failed
+with 403 Forbidden`) for any client not on Figma's catalog: only Cursor, VS Code,
+Claude Code, Codex, and Xcode are allowlisted. **Junie is not on the list**, so the remote server
+can't be used.
 
 This server sidesteps OAuth entirely. It talks to Figma's public REST API with a PAT, which has no
 client allowlist, and exposes two MCP tools the agent can call with a pasted Figma URL.
 
 ## Tools
 
-| Tool | What it returns |
-|------|-----------------|
-| `get_figma_design({ url, depth? })` | The full node tree (layout, styles, text, fills, components) for the frame in the URL — the design spec. Pass `depth` (2–4) to keep big frames small. |
-| `get_figma_image({ url, format?, scale? })` | A signed PNG/SVG/JPG/PDF render URL for the frame. URLs expire after ~30 days. |
+| Tool                                        | What it returns                                                                                                                                       |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `get_figma_design({ url, depth? })`         | The full node tree (layout, styles, text, fills, components) for the frame in the URL — the design spec. Pass `depth` (2–4) to keep big frames small. |
+| `get_figma_image({ url, format?, scale? })` | A signed PNG/SVG/JPG/PDF render URL for the frame. URLs expire after ~30 days.                                                                        |
 
 The URL is any Figma share link that includes a `node-id`, e.g.
 `https://www.figma.com/design/<key>/<title>?node-id=1123-747`. In Figma: right-click the frame →

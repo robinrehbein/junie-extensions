@@ -5,9 +5,10 @@ description: Pull a Figma design into context from its share URL. Use when the u
 
 # Figma (design → context via REST API + PAT)
 
-When a Figma link is in play, use the **`figma` MCP server** tools to read the design, then implement
-it following the project's existing UI conventions. This replaces the remote Figma MCP, which rejects
-Junie at OAuth (`DCR failed with 403 Forbidden` — Junie isn't on Figma's client allowlist).
+When a Figma link is in play, use the **`figma` MCP server** tools to read the design, then
+implement it following the project's existing UI conventions. This replaces the remote Figma MCP,
+which rejects Junie at OAuth (`DCR failed with 403 Forbidden` — Junie isn't on Figma's client
+allowlist).
 
 ## Tools
 
@@ -30,7 +31,7 @@ Don't use it for a plain web URL or a non-Figma asset — the parser rejects non
 ## Workflow
 
 1. **Confirm the link has a `node-id`.** If `?node-id=…` is missing, ask the user to copy a link to
-   the specific frame (Figma → right-click frame → *Copy/paste as → Copy link to selection*). A
+   the specific frame (Figma → right-click frame → _Copy/paste as → Copy link to selection_). A
    file-level link has no frame and can't be fetched.
 2. **Fetch the spec** with `get_figma_design({ url })`. For a large frame, pass `depth` (2–4) first
    to get an overview, then deepen if needed — the node tree can be big.
@@ -41,6 +42,6 @@ Don't use it for a plain web URL or a non-Figma asset — the parser rejects non
 ## Notes
 
 - Auth is a **Personal Access Token** passed as `FIGMA_TOKEN` in the server's MCP config — no OAuth,
-  no allowlist. If a call fails with 401/403, the token is wrong or can't see the file; tell the user
-  to regenerate a PAT with read access to that file.
+  no allowlist. If a call fails with 401/403, the token is wrong or can't see the file; tell the
+  user to regenerate a PAT with read access to that file.
 - Render URLs from `get_figma_image` are signed and expire — don't store them long-term.

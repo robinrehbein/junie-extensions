@@ -2,9 +2,9 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
+  type CallToolRequest,
   CallToolRequestSchema,
   ListToolsRequestSchema,
-  type CallToolRequest,
 } from "@modelcontextprotocol/sdk/types.js";
 
 import { KnowledgeStore } from "./db.ts";
@@ -29,9 +29,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req: CallToolRequest) => 
   const args = req.params.arguments ?? {};
   // Own-property check: a synthetic name like "constructor" must fall through to Unknown
   // tool instead of resolving to an Object.prototype member.
-  const handler = Object.prototype.hasOwnProperty.call(handlers, name)
-    ? handlers[name]
-    : undefined;
+  const handler = Object.prototype.hasOwnProperty.call(handlers, name) ? handlers[name] : undefined;
   if (!handler) {
     return {
       content: [{ type: "text" as const, text: `Unknown tool: ${name}` }],

@@ -1,8 +1,8 @@
 // Runnable self-check: exercises the real store + embeddings + search end-to-end.
 // Run: deno task selfcheck   (or: deno run -A src/selfcheck.ts)
 // First run downloads the MiniLM model (~25MB) into ~/.junie/knowledge/models.
-import { KnowledgeStore, type Entry } from "./db.ts";
-import { LocalEmbedder, type Embedder } from "./embeddings.ts";
+import { type Entry, KnowledgeStore } from "./db.ts";
+import { type Embedder, LocalEmbedder } from "./embeddings.ts";
 import { createHandlers } from "./tools.ts";
 
 let failures = 0;
@@ -49,8 +49,7 @@ console.log("\n[1/8] save across all three kinds");
 const auth = await save({
   kind: "codebase",
   title: "auth module",
-  body:
-    "Handles user login and authentication. The auth module issues JWT tokens after password " +
+  body: "Handles user login and authentication. The auth module issues JWT tokens after password " +
     "verification, manages sessions, and guards protected routes via a middleware.",
   tags: ["auth", "security"],
   project: "demo",
@@ -71,7 +70,8 @@ const stack = await save({
 const handoff = await save({
   kind: "recap",
   title: "session handoff",
-  body: "Finished wiring the auth flow. Open thread: add refresh tokens; pending review of the payments refund path.",
+  body:
+    "Finished wiring the auth flow. Open thread: add refresh tokens; pending review of the payments refund path.",
   project: "other",
 });
 assert(typeof auth.id === "string", "save returns an id");
@@ -90,7 +90,10 @@ assert(signinHits[0]?.id === auth.id, "auth module matches a differently-phrased
 
 console.log("\n[4/8] kind/project scoping excludes other kinds/projects");
 const recapOther = await search({ query: "what was done", kind: "recap", project: "other" });
-assert(recapOther.length === 1 && recapOther[0].id === handoff.id, "recap@other returns only the handoff");
+assert(
+  recapOther.length === 1 && recapOther[0].id === handoff.id,
+  "recap@other returns only the handoff",
+);
 const recapDemo = await search({ query: "what was done", kind: "recap", project: "demo" });
 assert(recapDemo.length === 0, "recap@demo has no entries (no leakage)");
 
@@ -109,7 +112,10 @@ const dup = await save({
   tags: ["auth", "login"],
   project: "demo",
 });
-assert(Array.isArray(dup.dedup_hint) && dup.dedup_hint.length > 0, "near-duplicate surfaces a dedup_hint");
+assert(
+  Array.isArray(dup.dedup_hint) && dup.dedup_hint.length > 0,
+  "near-duplicate surfaces a dedup_hint",
+);
 assert(dup.dedup_hint?.[0]?.id === auth.id, "dedup_hint points at the existing auth module");
 
 console.log("\n[7/8] update-on-existing-id re-embeds");
@@ -129,25 +135,41 @@ const before = store.count();
 h.delete_knowledge({ id: payments.id });
 assert(store.count() === before - 1, "count drops by one after delete");
 assert(store.getEntry(payments.id) === null, "deleted entry is gone");
-assert(store.entriesWithEmbedding({}).every((e) => e.id !== payments.id), "embedding row is gone too");
+assert(
+  store.entriesWithEmbedding({}).every((e) => e.id !== payments.id),
+  "embedding row is gone too",
+);
 
 console.log("\n[bonus] list with tag filter");
 const authTagged = h.list_knowledge({ tag: "auth" }) as Array<{ tags: string[] }>;
-assert(authTagged.length >= 1 && authTagged.every((e) => e.tags.includes("auth")), "tag filter returns only matching entries");
+assert(
+  authTagged.length >= 1 && authTagged.every((e) => e.tags.includes("auth")),
+  "tag filter returns only matching entries",
+);
+
+console.log("\n[bonus] get_knowledge on a missing id returns { found: false }, not bare null");
+const missing = h.get_knowledge({ id: "does-not-exist-ulid" }) as { found?: boolean };
+assert(
+  missing.found === false,
+  "missing id returns { found: false }, distinguishable from a store failure",
+);
 
 console.log("\n[bonus] cross-kind id collision does not clobber the existing entry");
 const stackBefore = h.get_knowledge({ id: stack.id }) as Entry | null;
 const countBefore = store.count();
 const collide = await save({
-  id: stack.id,      // belongs to a `project` entry
-  kind: "codebase",  // different kind → must NOT reuse the id
+  id: stack.id, // belongs to a `project` entry
+  kind: "codebase", // different kind → must NOT reuse the id
   title: "tech stack (codebase)",
   body: "Attempt to overwrite the project entry as a codebase entry.",
   project: "demo",
 });
 assert(collide.id !== stack.id, "a colliding id (different kind) gets a fresh id, not a clobber");
 const stackAfter = h.get_knowledge({ id: stack.id }) as Entry | null;
-assert(stackAfter?.kind === "project" && stackAfter?.body === stackBefore?.body, "original entry is untouched");
+assert(
+  stackAfter?.kind === "project" && stackAfter?.body === stackBefore?.body,
+  "original entry is untouched",
+);
 assert(store.count() === countBefore + 1, "a new entry is created, not an overwrite");
 
 console.log("\n[bonus] embedder-dimension drift throws instead of silently returning []");
@@ -174,7 +196,8 @@ async function expectDimMismatch(fn: () => Promise<unknown>, what: string): Prom
   }
 }
 await expectDimMismatch(
-  () => h1536.save_knowledge({ kind: "project", title: "drift", body: "drift" }) as Promise<unknown>,
+  () =>
+    h1536.save_knowledge({ kind: "project", title: "drift", body: "drift" }) as Promise<unknown>,
   "save_knowledge under a 1536-dim embedder",
 );
 await expectDimMismatch(
@@ -182,7 +205,10 @@ await expectDimMismatch(
   "search_knowledge under a 1536-dim embedder",
 );
 const stillOk = await search({ query: "login" });
-assert(stillOk.length > 0, "search with the matching embedder still works after the mismatch checks");
+assert(
+  stillOk.length > 0,
+  "search with the matching embedder still works after the mismatch checks",
+);
 
 store.close();
 Deno.removeSync(tmpDb);

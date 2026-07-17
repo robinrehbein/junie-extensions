@@ -9,20 +9,21 @@ Self-hosted Plane at **https://plane.join-noah.de**, workspace slug **`noah`**. 
 **PROD** (product), **DEV** (engineering — default), **FND** (founding). All access goes through
 `scripts/plane.sh` (curl + jq) — **no MCP**.
 
-Copy this extension's `scripts/plane.sh` into `<project>/scripts/` before first use — the commands below call it from the project root.
+Copy this extension's `scripts/plane.sh` into `<project>/scripts/` before first use — the commands
+below call it from the project root.
 
 ## Configuration (environment)
 
-| Variable | Default | Notes |
-|---|---|---|
-| `PLANE_API_KEY` | — | **Required.** Generate in Plane → Profile → API Tokens. |
-| `PLANE_BASE_URL` | `https://plane.join-noah.de` | |
-| `PLANE_WORKSPACE` | `noah` | workspace slug |
-| `PLANE_PROJECT` | `DEV` | default project: `PROD` \| `DEV` \| `FND` \| `<uuid>` |
+| Variable          | Default                      | Notes                                                   |
+| ----------------- | ---------------------------- | ------------------------------------------------------- |
+| `PLANE_API_KEY`   | —                            | **Required.** Generate in Plane → Profile → API Tokens. |
+| `PLANE_BASE_URL`  | `https://plane.join-noah.de` |                                                         |
+| `PLANE_WORKSPACE` | `noah`                       | workspace slug                                          |
+| `PLANE_PROJECT`   | `DEV`                        | default project: `PROD` \| `DEV` \| `FND` \| `<uuid>`   |
 
 Project UUIDs: `PROD=031c984b-1609-4dce-bf38-cd9c47c40cfe`,
-`DEV=56fb4930-19e3-4fee-8ec6-8959367d6ba1`, `FND=1bbd88f5-7007-4c5d-b95b-31fdd12709f3`.
-DEV default assignee: Robin `714ee8f1-463f-4c9d-bae3-22cc007ccc1d`.
+`DEV=56fb4930-19e3-4fee-8ec6-8959367d6ba1`, `FND=1bbd88f5-7007-4c5d-b95b-31fdd12709f3`. DEV default
+assignee: Robin `714ee8f1-463f-4c9d-bae3-22cc007ccc1d`.
 
 ## Ticket references
 
@@ -49,16 +50,16 @@ scripts/plane.sh raw GET "/projects/56fb4930-19e3-4fee-8ec6-8959367d6ba1/issues/
 
 ## States (same 5 across all projects; UUIDs differ per project)
 
-| State | Group | Use for |
-|---|---|---|
-| Backlog | backlog | Not planned |
-| Todo | unstarted | Planned, waiting |
-| In Progress | started | Currently being worked on |
-| Done | completed | Merged & verified |
-| Cancelled | cancelled | No longer needed |
+| State       | Group     | Use for                   |
+| ----------- | --------- | ------------------------- |
+| Backlog     | backlog   | Not planned               |
+| Todo        | unstarted | Planned, waiting          |
+| In Progress | started   | Currently being worked on |
+| Done        | completed | Merged & verified         |
+| Cancelled   | cancelled | No longer needed          |
 
-There is **no** "In Review" state — keep a ticket `In Progress` while its PR is open; move to
-`Done` only after the PR is merged. Always comment the PR URL on the ticket when opening it.
+There is **no** "In Review" state — keep a ticket `In Progress` while its PR is open; move to `Done`
+only after the PR is merged. Always comment the PR URL on the ticket when opening it.
 
 ## Workflow usage
 
@@ -72,4 +73,5 @@ There is **no** "In Review" state — keep a ticket `In Progress` while its PR i
   full set and filters client-side. Rate limit ~60 req/min — avoid tight loops.
 - Direct REST base: `https://plane.join-noah.de/api/v1/workspaces/noah/projects/{PROJECT_ID}`,
   header `X-API-Key: $PLANE_API_KEY`.
-- DEV issue naming: `[Feature] Layer: Short Description` (e.g. `[Send Money] API: Create Transfer Endpoint`).
+- DEV issue naming: `[Feature] Layer: Short Description` (e.g.
+  `[Send Money] API: Create Transfer Endpoint`).

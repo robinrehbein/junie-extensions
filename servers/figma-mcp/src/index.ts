@@ -4,9 +4,9 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
+  type CallToolRequest,
   CallToolRequestSchema,
   ListToolsRequestSchema,
-  type CallToolRequest,
 } from "@modelcontextprotocol/sdk/types.js";
 
 import { Handlers, TOOL_DEFS } from "./figma.ts";
@@ -24,9 +24,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req: CallToolRequest) => 
   const name = req.params.name;
   const args = req.params.arguments ?? {};
   // Own-property check: Handlers["constructor"] must NOT resolve to Object.prototype.constructor.
-  const handler = Object.prototype.hasOwnProperty.call(Handlers, name)
-    ? Handlers[name]
-    : undefined;
+  const handler = Object.prototype.hasOwnProperty.call(Handlers, name) ? Handlers[name] : undefined;
   if (!handler) {
     return {
       content: [{ type: "text" as const, text: `Unknown tool: ${name}` }],

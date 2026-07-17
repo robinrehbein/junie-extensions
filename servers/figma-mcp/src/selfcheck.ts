@@ -1,7 +1,7 @@
 // Runnable self-check: validates Figma URL parsing (the part that breaks) offline, plus an
 // optional live smoke test when FIGMA_TOKEN + FIGMA_SELFTEST_URL are set.
 // Run: deno task selfcheck   (or: deno run -A src/selfcheck.ts)
-import { parseFigmaUrl, Handlers } from "./figma.ts";
+import { Handlers, parseFigmaUrl } from "./figma.ts";
 
 let failures = 0;
 function assert(cond: unknown, msg: string): void {
@@ -98,15 +98,23 @@ try {
 } catch (e) {
   designErr = (e as Error).message;
 }
-assert(/node-id/i.test(designErr), "missing node-id raises a helpful node-id error before any fetch");
+assert(
+  /node-id/i.test(designErr),
+  "missing node-id raises a helpful node-id error before any fetch",
+);
 
 // Optional live smoke test — only runs if an operator wired real credentials.
 const token = Deno.env.get("FIGMA_TOKEN");
 const liveUrl = Deno.env.get("FIGMA_SELFTEST_URL");
 if (token && liveUrl) {
-  console.log("\n[live] get_figma_design against a real file (FIGMA_TOKEN + FIGMA_SELFTEST_URL set)");
+  console.log(
+    "\n[live] get_figma_design against a real file (FIGMA_TOKEN + FIGMA_SELFTEST_URL set)",
+  );
   try {
-    const res = await Handlers.get_figma_design({ url: liveUrl, depth: 1 }) as Record<string, unknown>;
+    const res = await Handlers.get_figma_design({ url: liveUrl, depth: 1 }) as Record<
+      string,
+      unknown
+    >;
     assert(res && typeof res.nodes === "object", "live response has a `nodes` map");
   } catch (e) {
     failures++;

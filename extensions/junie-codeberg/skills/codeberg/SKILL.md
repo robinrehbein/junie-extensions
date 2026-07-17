@@ -5,41 +5,42 @@ description: Drive Codeberg source hosting via the `fj` CLI and git — authenti
 
 # Codeberg (source hosting)
 
-Hosted at **codeberg.org/join-noah/noah-monorepo** (SSH `origin`). Interact through the
-`fj` CLI (v0.3.0) plus plain `git` for branch/worktree operations. MCPs are not used.
+Hosted at **codeberg.org/join-noah/noah-monorepo** (SSH `origin`). Interact through the `fj` CLI
+(v0.3.0) plus plain `git` for branch/worktree operations. MCPs are not used.
 
 ## Authentication
 
-`fj` auth is **host-based** (one login per instance, not per-profile). It is already
-authenticated on `codeberg.org` as `birneklub@codeberg.org`. Verify at any time:
+`fj` auth is **host-based** (one login per instance, not per-profile). It is already authenticated
+on `codeberg.org` as `birneklub@codeberg.org`. Verify at any time:
 
 ```bash
 fj whoami        # current authed user (inferred from origin)
 fj auth list     # all logged-in instances
 ```
 
-To (re)authenticate headlessly (token from Codeberg → Settings → Applications). The same token
-must be **exported as `CODEBERG_TOKEN`** — `fj auth` reads it once at login, and the issue-label
-REST fallback below reuses it from the env:
+To (re)authenticate headlessly (token from Codeberg → Settings → Applications). The same token must
+be **exported as `CODEBERG_TOKEN`** — `fj auth` reads it once at login, and the issue-label REST
+fallback below reuses it from the env:
 
 ```bash
 export CODEBERG_TOKEN=<token>
 echo "$CODEBERG_TOKEN" | fj auth add-key birneklub   # host-based login (run once); env reused by the REST fallback
 ```
 
-`fj` infers the repo from the local `origin` remote, so inside a clone you run bare
-`fj pr ...` / `fj issue ...`. Override with `-r owner/name` or `-R <remote>` only when needed.
+`fj` infers the repo from the local `origin` remote, so inside a clone you run bare `fj pr ...` /
+`fj issue ...`. Override with `-r owner/name` or `-R <remote>` only when needed.
 
 ## Branching model
 
 - `main` is the **only** long-lived branch. Never commit or push directly to `main`.
-- All work happens on `feature/<ticket>-<slug>` (or `fix/<ticket>-<slug>`), e.g. `feature/DEV-123-send-money-endpoint`.
+- All work happens on `feature/<ticket>-<slug>` (or `fix/<ticket>-<slug>`), e.g.
+  `feature/DEV-123-send-money-endpoint`.
 - Pull requests target `main`. Default merge strategy: **squash**, then delete the branch.
 
 ## Worktrees (in `.worktrees/`)
 
-Worktrees live **inside the project dir** at `.worktrees/<name>` (NOT as siblings, which is
-where Junie's built-in `/worktree` puts them). Use the helper, not `/worktree`:
+Worktrees live **inside the project dir** at `.worktrees/<name>` (NOT as siblings, which is where
+Junie's built-in `/worktree` puts them). Use the helper, not `/worktree`:
 
 ```bash
 scripts/worktree.sh create feature/DEV-123-send-money-endpoint   # creates .worktrees/feature-DEV-123-send-money-endpoint
@@ -47,10 +48,11 @@ scripts/worktree.sh list
 scripts/worktree.sh remove feature/DEV-123-send-money-endpoint
 ```
 
-Copy this extension's `scripts/worktree.sh` into `<project>/scripts/` before first use — the calls above run from the project root.
+Copy this extension's `scripts/worktree.sh` into `<project>/scripts/` before first use — the calls
+above run from the project root.
 
-After creating one, `cd` into it; Junie detects the switch and offers to restart the session
-there with a clean task. The branch is created fresh from `origin/main`.
+After creating one, `cd` into it; Junie detects the switch and offers to restart the session there
+with a clean task. The branch is created fresh from `origin/main`.
 
 ## Branches & commits (git — `fj` has no branch subcommand)
 
@@ -88,8 +90,8 @@ fj issue close 7 -w "done"
 fj issue search -s open
 ```
 
-`fj` **cannot label issues** (only PRs and org-level label definitions). Fallback via the
-Forgejo REST API (uses the same `$CODEBERG_TOKEN` exported above):
+`fj` **cannot label issues** (only PRs and org-level label definitions). Fallback via the Forgejo
+REST API (uses the same `$CODEBERG_TOKEN` exported above):
 
 ```bash
 curl -fsS -X POST -H "Authorization: token $CODEBERG_TOKEN" \

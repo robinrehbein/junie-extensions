@@ -133,7 +133,9 @@ export const Handlers: Record<
     if (!url) throw new Error("url is required (a Figma design link)");
     const { fileKey, nodeIds } = parseFigmaUrl(url);
     if (!nodeIds.length) {
-      throw new Error("No node-id in the URL — copy a link to a specific frame (needs ?node-id=…).");
+      throw new Error(
+        "No node-id in the URL — copy a link to a specific frame (needs ?node-id=…).",
+      );
     }
     // Trust boundary: format + scale are LLM-controlled — validate against the enum and clamp
     // to Figma's supported range before forwarding to the API.
@@ -177,7 +179,8 @@ export const TOOL_DEFS = [
         },
         depth: {
           type: "number",
-          description: "Optional max tree depth to keep the response small (try 2-4 for big frames).",
+          description:
+            "Optional max tree depth to keep the response small (try 2-4 for big frames).",
         },
       },
       required: ["url"],

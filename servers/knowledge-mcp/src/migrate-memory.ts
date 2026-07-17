@@ -8,7 +8,7 @@
 //   deno task migrate-memory            # dry run (default)
 //   deno task migrate-memory --commit   # migrate + clean up
 //   deno task migrate-memory --selfcheck
-import { KnowledgeStore, type Entry } from "./db.ts";
+import { type Entry, KnowledgeStore } from "./db.ts";
 import { selectEmbedder } from "./embeddings.ts";
 import { tokenEstimate } from "./tools.ts";
 
@@ -217,16 +217,33 @@ export function selfcheck(): void {
   assert(plan1.migrate[0].id === "mem:proj-widget", "uses a stable deterministic id");
 
   const lines = indexLinesToRemove(tmp, ["proj-widget"]);
-  assert(lines.length === 1 && lines[0].includes("proj-widget.md"), "finds the MEMORY.md line to drop");
+  assert(
+    lines.length === 1 && lines[0].includes("proj-widget.md"),
+    "finds the MEMORY.md line to drop",
+  );
 
   // Idempotency: once the id is present in the store, a re-run skips it (→ already), not migrate.
   const ts = new Date().toISOString();
   store.saveEntry(
-    { id: "mem:proj-widget", kind: "project", title: "x", body: "x", tags: [], project: null, source: "migrated:memory", token_est: 1, created_at: ts, updated_at: ts },
+    {
+      id: "mem:proj-widget",
+      kind: "project",
+      title: "x",
+      body: "x",
+      tags: [],
+      project: null,
+      source: "migrated:memory",
+      token_est: 1,
+      created_at: ts,
+      updated_at: ts,
+    },
     [0.1, 0.2],
   );
   const plan2 = buildPlan(store, memories);
-  assert(plan2.migrate.length === 0 && plan2.already.length === 1, "re-run is idempotent (skips migrated id)");
+  assert(
+    plan2.migrate.length === 0 && plan2.already.length === 1,
+    "re-run is idempotent (skips migrated id)",
+  );
 
   store.close();
   try {

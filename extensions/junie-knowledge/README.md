@@ -1,9 +1,8 @@
 # junie-knowledge
 
 A cross-session **knowledge store** for Junie CLI that cuts agent token usage. It pairs an
-auto-loaded guideline (when to search / when to save / distil to a few lines) with a shared
-**MCP server** that does the heavy lifting: SQLite storage + local embeddings + semantic top-k
-retrieval.
+auto-loaded guideline (when to search / when to save / distil to a few lines) with a shared **MCP
+server** that does the heavy lifting: SQLite storage + local embeddings + semantic top-k retrieval.
 
 The mechanism, in one line: **distil at save time, recall on demand.** The agent compresses a fact
 to a few lines when saving, and searches for the relevant slice only when it would otherwise re-read
@@ -11,11 +10,11 @@ a file or re-trace code — so it stops burning tokens rediscovering the same th
 
 ## What's inside
 
-| Piece | Type | Purpose |
-|-------|------|---------|
-| `knowledge` | guideline | Auto-loaded into every task. Tells the agent to `search_knowledge` before re-reading large files and `save_knowledge` (distilled) after learning durable facts. |
-| `/knowledge` | slash command | List, search, inspect, and clean up entries. |
-| `knowledge` | MCP server | Owns the store. See [`../../servers/knowledge-mcp/`](../../servers/knowledge-mcp/). |
+| Piece        | Type          | Purpose                                                                                                                                                         |
+| ------------ | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `knowledge`  | guideline     | Auto-loaded into every task. Tells the agent to `search_knowledge` before re-reading large files and `save_knowledge` (distilled) after learning durable facts. |
+| `/knowledge` | slash command | List, search, inspect, and clean up entries.                                                                                                                    |
+| `knowledge`  | MCP server    | Owns the store. See [`../../servers/knowledge-mcp/`](../../servers/knowledge-mcp/).                                                                             |
 
 Three knowledge kinds, mapped to what you save:
 
@@ -33,15 +32,15 @@ They're complementary and **non-overlapping by construction** — each fact has 
 - **`junie-knowledge`** (`project` · `codebase` · `recap`) — this store: a server-backed,
   **on-demand** semantic layer for durable project facts, codebase maps, and session recaps.
 
-The one-line rule: persona / preferences / working-style → memory; durable project facts,
-decisions, codebase maps, and session recaps → knowledge. `project` facts live **only** here.
+The one-line rule: persona / preferences / working-style → memory; durable project facts, decisions,
+codebase maps, and session recaps → knowledge. `project` facts live **only** here.
 
 ## One-time setup: register the MCP server
 
-Junie loads MCP servers from `~/.junie/mcp/mcp.json` (user scope) or
-`<project>/.junie/mcp/mcp.json` (project scope), under `mcpServers`. The server lives in this repo
-at [`../servers/knowledge-mcp/`](../servers/knowledge-mcp/). Register it with the **absolute path**
-on your machine:
+Junie loads MCP servers from `~/.junie/mcp/mcp.json` (user scope) or `<project>/.junie/mcp/mcp.json`
+(project scope), under `mcpServers`. The server lives in this repo at
+[`../servers/knowledge-mcp/`](../servers/knowledge-mcp/). Register it with the **absolute path** on
+your machine:
 
 ```json
 {

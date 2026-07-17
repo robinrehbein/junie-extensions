@@ -10,18 +10,18 @@ description: >
 
 # Ponytail Gain
 
-Display this scoreboard when invoked. One-shot: do NOT change mode, write flag
-files, or persist anything.
+Display this scoreboard when invoked. One-shot: do NOT change mode, write flag files, or persist
+anything.
 
-The figures are the **upstream** benchmark medians (5 everyday tasks: email validator, debounce,
-CSV sum, countdown timer, rate limiter; three models: Haiku, Sonnet, Opus), from the ponytail
-project (https://github.com/DietrichGebert/ponytail). They are measured upstream, not computed
-from this repo, and are not shipped here — cite the upstream repo, not a local path.
+The figures are the **upstream** benchmark medians (5 everyday tasks: email validator, debounce, CSV
+sum, countdown timer, rate limiter; three models: Haiku, Sonnet, Opus), from the ponytail project
+(https://github.com/DietrichGebert/ponytail). They are measured upstream, not computed from this
+repo, and are not shipped here — cite the upstream repo, not a local path.
 
 ## Scoreboard
 
-Render plain ASCII bars. The bar length shows the measured range; the label
-carries the exact figure:
+Render plain ASCII bars. The bar length shows the measured range; the label carries the exact
+figure:
 
 ```
   ponytail gain                     benchmark median · 5 tasks · 3 models
@@ -38,13 +38,11 @@ carries the exact figure:
 
 ## Honesty boundary
 
-These are benchmark medians, not this repo. NEVER print a per-repo savings
-number ("you saved X lines/tokens here"): the unbuilt version was never
-written, so there is no real baseline to subtract from in a live repo. The
-only real per-repo figures come from `/ponytail-debt` (a counted ledger), and
-this card points there instead of inventing one.
+These are benchmark medians, not this repo. NEVER print a per-repo savings number ("you saved X
+lines/tokens here"): the unbuilt version was never written, so there is no real baseline to subtract
+from in a live repo. The only real per-repo figures come from `/ponytail-debt` (a counted ledger),
+and this card points there instead of inventing one.
 
 ## Boundaries
 
-One-shot display. Edits nothing, changes no mode.
-"stop ponytail" or "normal mode": revert.
+One-shot display. Edits nothing, changes no mode. "stop ponytail" or "normal mode": revert.

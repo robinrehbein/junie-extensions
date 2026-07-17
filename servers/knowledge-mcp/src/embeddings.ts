@@ -1,7 +1,7 @@
 // Embedding providers: local MiniLM (default, offline) or an OpenAI-compatible API.
 // Local uses @huggingface/transformers v3 on the pure-WASM ONNX backend, which runs under Deno
 // (the v2 @xenova/transformers package loads native sharp and fails to build under Deno).
-import { pipeline, env } from "@huggingface/transformers";
+import { env, pipeline } from "@huggingface/transformers";
 
 export interface Embedder {
   readonly name: string;
@@ -65,9 +65,24 @@ interface ApiCfg {
 
 // All three expose an OpenAI-compatible POST {model, input} -> {data[].embedding}.
 const API_PROVIDERS: Record<string, ApiCfg> = {
-  openai: { baseURL: "https://api.openai.com/v1", model: "text-embedding-3-small", dim: 1536, keyEnv: "OPENAI_API_KEY" },
-  voyage: { baseURL: "https://api.voyageai.com/v1", model: "voyage-3-lite", dim: 512, keyEnv: "VOYAGE_API_KEY" },
-  zai: { baseURL: "https://api.z.ai/api/paas/v4", model: "embedding-3", dim: 1024, keyEnv: "Z_AI_API_KEY" },
+  openai: {
+    baseURL: "https://api.openai.com/v1",
+    model: "text-embedding-3-small",
+    dim: 1536,
+    keyEnv: "OPENAI_API_KEY",
+  },
+  voyage: {
+    baseURL: "https://api.voyageai.com/v1",
+    model: "voyage-3-lite",
+    dim: 512,
+    keyEnv: "VOYAGE_API_KEY",
+  },
+  zai: {
+    baseURL: "https://api.z.ai/api/paas/v4",
+    model: "embedding-3",
+    dim: 1024,
+    keyEnv: "Z_AI_API_KEY",
+  },
 };
 
 export class ApiEmbedder implements Embedder {
