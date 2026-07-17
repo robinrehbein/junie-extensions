@@ -15,6 +15,7 @@ top of those mechanisms.
 | **junie-ponytail** | Lazy-senior-dev mode (minimal code, YAGNI) | An always-on guideline + 6 auto-invoked skills + `/ponytail*` commands; adapted from [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) (MIT) |
 | **junie-plane** | Self-hosted Plane ticket tracking | An auto-invoked `plane` skill + `scripts/plane.sh` (`curl`+`jq`) REST client — no MCP |
 | **junie-codeberg** | Codeberg source hosting (PRs, issues, CI) | An auto-invoked `codeberg` skill (`fj` + git) + `scripts/worktree.sh` for in-repo worktrees |
+| **junie-goal-loop** | Claude-Code-style `/goal` + `/loop` | An auto-loaded guideline + `/goal` (persistent objective with a self-revising checklist in `.junie/goal.md`) and `/loop` (in-process self-judge loop) commands; no MCP |
 
 ## Layout
 
@@ -54,6 +55,12 @@ extensions/
     skills/codeberg/SKILL.md          # auto-invoked → Codeberg/fj workflow
     scripts/worktree.sh               # in-repo .worktrees/ helper (copy into consuming repo's scripts/)
     README.md
+  junie-goal-loop/
+    extension.json
+    guidelines/goal-loop.md           # auto-loaded → active-goal + dynamic-checklist + self-judge-loop protocol (no-op without .junie/goal.md)
+    commands/goal.md                  # /goal, /goal clear
+    commands/loop.md                  # /loop <prompt|criteria>
+    README.md
 servers/
   knowledge-mcp/                       # shared MCP server (SQLite + embeddings) backing junie-knowledge
     src/{index,db,embeddings,tools,selfcheck}.ts
@@ -67,10 +74,11 @@ This directory is a local marketplace. From any project:
 
 ```
 junie
-/extensions marketplace add /IdeaProjects/pandora/junie-extensions
+/extensions marketplace add /IdeaProjects/noah/packages/junie-extensions
 /extensions install junie-subagents
 /extensions install junie-memory
 /extensions install junie-knowledge   # one-time: also register the MCP server — see its README
+/extensions install junie-goal-loop
 ```
 
 Choose **Project** or **User** scope when prompted. To share with the team, push this repo

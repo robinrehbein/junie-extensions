@@ -1,0 +1,4 @@
+{
+  "name": "junie-goal-loop",
+  "description": "Claude-Code-style /goal and /loop for Junie CLI. /goal sets a persistent objective backed by a dynamic checklist stored in <project>/.junie/goal.md that revises itself as the real work reveals more or different steps than first planned; /loop runs a self-judge loop — work one pass, evaluate against explicit criteria, repeat until they're met or you stall. One auto-loaded guideline + two slash commands; no MCP, no scripts."
+}

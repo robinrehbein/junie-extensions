@@ -115,6 +115,24 @@
         "pull-requests",
         "ci"
       ]
+    },
+    {
+      "name": "junie-goal-loop",
+      "source": "./extensions/junie-goal-loop",
+      "description": "Claude-Code-style /goal and /loop for Junie CLI. /goal sets a persistent objective backed by a dynamic checklist in <project>/.junie/goal.md that revises itself as the real work reveals more or different steps; /loop runs a self-judge loop (work one pass, evaluate against explicit criteria, repeat until met or stall). One auto-loaded guideline + two slash commands; no MCP.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Robin Rehbein"
+      },
+      "category": "workflow",
+      "keywords": [
+        "goal",
+        "loop",
+        "checklist",
+        "claude-code",
+        "planning",
+        "iteration"
+      ]
     }
   ]
 }
