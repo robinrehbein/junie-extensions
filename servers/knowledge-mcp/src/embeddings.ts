@@ -1,7 +1,7 @@
 // Embedding providers: local MiniLM (default, offline) or an OpenAI-compatible API.
 // Local uses @huggingface/transformers v3 on the pure-WASM ONNX backend, which runs under Deno
 // (the v2 @xenova/transformers package loads native sharp and fails to build under Deno).
-import { pipeline, env } from "npm:@huggingface/transformers@3.7.6";
+import { pipeline, env } from "@huggingface/transformers";
 
 export interface Embedder {
   readonly name: string;
@@ -13,10 +13,16 @@ function home(): string {
   return Deno.env.get("HOME") ?? Deno.env.get("USERPROFILE") ?? ".";
 }
 
-// Lazy singleton: loading the model downloads ~25MB on first run, then caches it.
-let _extractorPromise: Promise<unknown> | null = null;
+// The slice of the transformers.js pipeline we actually call; typed locally so the
+// library's heavy generics stay out of our signatures.
+interface FeatureExtractor {
+  (texts: string[], opts: { pooling: string; normalize: boolean }): Promise<{ tolist(): unknown }>;
+}
 
-async function localExtractor(model: string): Promise<any> {
+// Lazy singleton: loading the model downloads ~25MB on first run, then caches it.
+let _extractorPromise: Promise<FeatureExtractor> | null = null;
+
+function localExtractor(model: string): Promise<FeatureExtractor> {
   if (!_extractorPromise) {
     _extractorPromise = (async () => {
       env.allowLocalModels = false;
@@ -31,7 +37,7 @@ async function localExtractor(model: string): Promise<any> {
       e.backends!.onnx!.wasm ??= {};
       e.backends!.onnx!.wasm!.numThreads = 1;
       const ex = await pipeline("feature-extraction", model, { dtype: "fp32" });
-      return ex as unknown as any;
+      return ex as unknown as FeatureExtractor;
     })();
   }
   return _extractorPromise;

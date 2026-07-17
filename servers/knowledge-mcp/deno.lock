@@ -955,5 +955,11 @@
     "zod@4.4.3": {
       "integrity": "sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ=="
     }
+  },
+  "workspace": {
+    "dependencies": [
+      "npm:@huggingface/transformers@3.7.6",
+      "npm:@modelcontextprotocol/sdk@1.29.0"
+    ]
   }
 }

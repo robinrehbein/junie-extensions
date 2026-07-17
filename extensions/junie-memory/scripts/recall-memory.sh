@@ -19,7 +19,9 @@ INDEX="${JUNIE_MEMORY_INDEX:-$HOME/.junie/memory/MEMORY.md}"
 # Nothing to recall if the index does not exist or is empty.
 [ -s "$INDEX" ] || exit 0
 
+content="$(cat "$INDEX")" || exit 0
+
 printf '%s\n' "## Memory index (auto-injected by the junie-memory recall hook)"
 printf '%s\n' "If a line below is relevant to this task, read the linked ~/.junie/memory/<slug>.md for the full fact."
 printf '%s\n'
-cat "$INDEX"
+printf '%s\n' "$content"

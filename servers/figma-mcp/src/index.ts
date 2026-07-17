@@ -1,13 +1,13 @@
 // figma-mcp — MCP server (stdio): Figma design access via the REST API + a Personal Access Token.
 // Use this instead of the remote Figma MCP (https://mcp.figma.com/mcp), which 403s any client
 // not on Figma's catalog (Cursor/VS Code/Claude Code/Codex/Xcode) — Junie is not listed.
-import { Server } from "npm:@modelcontextprotocol/sdk@1.29.0/server/index.js";
-import { StdioServerTransport } from "npm:@modelcontextprotocol/sdk@1.29.0/server/stdio.js";
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
   type CallToolRequest,
-} from "npm:@modelcontextprotocol/sdk@1.29.0/types.js";
+} from "@modelcontextprotocol/sdk/types.js";
 
 import { Handlers, TOOL_DEFS } from "./figma.ts";
 
@@ -23,7 +23,10 @@ server.setRequestHandler(ListToolsRequestSchema, () => ({
 server.setRequestHandler(CallToolRequestSchema, async (req: CallToolRequest) => {
   const name = req.params.name;
   const args = req.params.arguments ?? {};
-  const handler = Handlers[name];
+  // Own-property check: Handlers["constructor"] must NOT resolve to Object.prototype.constructor.
+  const handler = Object.prototype.hasOwnProperty.call(Handlers, name)
+    ? Handlers[name]
+    : undefined;
   if (!handler) {
     return {
       content: [{ type: "text" as const, text: `Unknown tool: ${name}` }],
@@ -47,5 +50,9 @@ server.setRequestHandler(CallToolRequestSchema, async (req: CallToolRequest) => 
     };
   }
 });
+
+// Clean exit on signal — nothing to close, but let pending stdio writes flush first.
+Deno.addSignalListener("SIGTERM", () => Deno.exit(0));
+Deno.addSignalListener("SIGINT", () => Deno.exit(0));
 
 await server.connect(new StdioServerTransport());

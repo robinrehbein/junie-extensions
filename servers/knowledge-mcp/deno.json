@@ -4,6 +4,12 @@
     "selfcheck": "deno run -A src/selfcheck.ts",
     "migrate-memory": "deno run -A src/migrate-memory.ts"
   },
+  "imports": {
+    "@modelcontextprotocol/sdk/server/index.js": "npm:@modelcontextprotocol/sdk@1.29.0/server/index.js",
+    "@modelcontextprotocol/sdk/server/stdio.js": "npm:@modelcontextprotocol/sdk@1.29.0/server/stdio.js",
+    "@modelcontextprotocol/sdk/types.js": "npm:@modelcontextprotocol/sdk@1.29.0/types.js",
+    "@huggingface/transformers": "npm:@huggingface/transformers@3.7.6"
+  },
   "compilerOptions": {
     "strict": true
   }

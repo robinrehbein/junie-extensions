@@ -10,13 +10,14 @@
 #   scripts/worktree.sh remove  <branch|dir>
 set -euo pipefail
 
+command -v git >/dev/null || { echo "git not installed" >&2; exit 1; }
 common="$(git rev-parse --git-common-dir 2>/dev/null)" || { echo "not a git repo" >&2; exit 1; }
 root="$(cd "$common/.." && pwd)"   # main worktree root (where .worktrees/ lives)
 wt_dir="$root/.worktrees"
-mkdir -p "$wt_dir"
 
-# sanitize a branch name into a worktree directory name (feature/DEV-1-x -> feature-DEV-1-x)
-wtname() { echo "${1//\//-}"; }
+# sanitize a branch name into a worktree directory name (feature/DEV-1-x -> feature-DEV-1-x);
+# leading -/. stripped so the path is never mistaken for a git option
+wtname() { local n="${1//\//-}"; while [[ "$n" == -* || "$n" == .* ]]; do n="${n#?}"; done; echo "$n"; }
 
 usage() { sed -n '2,12p' "$0"; }
 
@@ -24,15 +25,17 @@ cmd="${1:-}"; shift || true
 case "$cmd" in
   create)
     branch="${1:?branch required (e.g. feature/DEV-123-slug)}"
+    [[ "$branch" == -* ]] && { echo "branch name must not start with '-': $branch" >&2; exit 1; }
+    mkdir -p "$wt_dir"
     dir="$wt_dir/$(wtname "$branch")"
     [[ -e "$dir" ]] && { echo "worktree already exists: $dir" >&2; exit 1; }
     # base the new branch on the latest main available
     git fetch origin main --quiet 2>/dev/null || true
     base="origin/main"; git rev-parse --verify --quiet "$base" >/dev/null || base="main"
     if git show-ref --verify --quiet "refs/heads/$branch"; then
-      git worktree add "$dir" "$branch"
+      git worktree add -- "$dir" "$branch"
     else
-      git worktree add -b "$branch" "$dir" "$base"
+      git worktree add -b "$branch" -- "$dir" "$base"
     fi
     echo "created worktree at: $dir"
     echo "  branch: $branch  (based on $base)"

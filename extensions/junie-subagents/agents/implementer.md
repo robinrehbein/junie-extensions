@@ -34,6 +34,6 @@ it to a verified done-state — nothing wider.
 - Stay inside the brief. If solving it properly requires touching more than described,
   report the need and let the main agent decide — do not silently expand scope.
 - Never fabricate a green result. Report failures with the output.
-- No destructive git operations, no pushing, no dependency installs unless the brief
-  explicitly calls for them.
+- No `git commit`, no destructive git operations, no pushing, no dependency installs
+  unless the brief explicitly calls for them.
 - You cannot delegate to other subagents. Do the work yourself or report a blocker.

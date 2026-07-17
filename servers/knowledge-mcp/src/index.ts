@@ -1,11 +1,11 @@
 // knowledge-mcp — MCP server (stdio) for cross-session distilled knowledge.
-import { Server } from "npm:@modelcontextprotocol/sdk@1.29.0/server/index.js";
-import { StdioServerTransport } from "npm:@modelcontextprotocol/sdk@1.29.0/server/stdio.js";
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
   type CallToolRequest,
-} from "npm:@modelcontextprotocol/sdk@1.29.0/types.js";
+} from "@modelcontextprotocol/sdk/types.js";
 
 import { KnowledgeStore } from "./db.ts";
 import { selectEmbedder } from "./embeddings.ts";
@@ -27,7 +27,11 @@ server.setRequestHandler(ListToolsRequestSchema, () => ({
 server.setRequestHandler(CallToolRequestSchema, async (req: CallToolRequest) => {
   const name = req.params.name;
   const args = req.params.arguments ?? {};
-  const handler = handlers[name];
+  // Own-property check: a synthetic name like "constructor" must fall through to Unknown
+  // tool instead of resolving to an Object.prototype member.
+  const handler = Object.prototype.hasOwnProperty.call(handlers, name)
+    ? handlers[name]
+    : undefined;
   if (!handler) {
     return {
       content: [{ type: "text" as const, text: `Unknown tool: ${name}` }],
@@ -48,3 +52,13 @@ server.setRequestHandler(CallToolRequestSchema, async (req: CallToolRequest) => 
 });
 
 await server.connect(new StdioServerTransport());
+
+// Checkpoint/close the SQLite DB on shutdown so no -wal/-shm files linger.
+for (const sig of ["SIGTERM", "SIGINT"] as const) {
+  Deno.addSignalListener(sig, () => {
+    try {
+      store.close();
+    } catch { /* already closed */ }
+    Deno.exit(0);
+  });
+}

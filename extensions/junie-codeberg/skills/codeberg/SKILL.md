@@ -47,6 +47,8 @@ scripts/worktree.sh list
 scripts/worktree.sh remove feature/DEV-123-send-money-endpoint
 ```
 
+Copy this extension's `scripts/worktree.sh` into `<project>/scripts/` before first use — the calls above run from the project root.
+
 After creating one, `cd` into it; Junie detects the switch and offers to restart the session
 there with a clean task. The branch is created fresh from `origin/main`.
 

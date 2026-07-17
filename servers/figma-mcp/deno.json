@@ -3,6 +3,9 @@
     "serve": "deno run --allow-net=api.figma.com --allow-env=FIGMA_TOKEN,FIGMA_ACCESS_TOKEN src/index.ts",
     "selfcheck": "deno run -A src/selfcheck.ts"
   },
+  "imports": {
+    "@modelcontextprotocol/sdk": "npm:@modelcontextprotocol/sdk@1.29.0"
+  },
   "compilerOptions": {
     "strict": true
   }

@@ -160,15 +160,19 @@ async function main(commit: boolean): Promise<void> {
     return;
   }
 
+  // Rewrite the index FIRST (atomically, via temp + rename), then delete the memory files —
+  // a crash in between must not leave MEMORY.md pointing at deleted files.
+  if (removeIndex.length) {
+    const text = Deno.readTextFileSync(`${dir}/MEMORY.md`);
+    const kept = text.split(/\r?\n/).filter((l) => !removeIndex.includes(l)).join("\n");
+    const tmp = `${dir}/MEMORY.md.tmp`;
+    Deno.writeTextFileSync(tmp, kept);
+    Deno.renameSync(tmp, `${dir}/MEMORY.md`);
+  }
   for (const slug of projectSlugs) {
     try {
       Deno.removeSync(`${dir}/${slug}.md`);
     } catch { /* already gone */ }
-  }
-  if (removeIndex.length) {
-    const text = Deno.readTextFileSync(`${dir}/MEMORY.md`);
-    const kept = text.split(/\r?\n/).filter((l) => !removeIndex.includes(l)).join("\n");
-    Deno.writeTextFileSync(`${dir}/MEMORY.md`, kept);
   }
   store.close();
   console.log(`\nDone: ${migrate.length} migrated, ${projectSlugs.length} memory file(s) removed.`);

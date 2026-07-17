@@ -82,7 +82,7 @@ function getToken(): string {
   return t;
 }
 
-async function figmaGet(pathAndQuery: string): Promise<any> {
+async function figmaGet<T>(pathAndQuery: string): Promise<T> {
   const res = await fetch(`${FIGMA_API}${pathAndQuery}`, {
     headers: { "X-Figma-Token": getToken() },
   });
@@ -122,7 +122,9 @@ export const Handlers: Record<
     const q = new URLSearchParams({ ids: nodeIds.join(",") });
     const depth = num(args.depth);
     if (depth) q.set("depth", String(depth));
-    return await figmaGet(`/v1/files/${encodeURIComponent(fileKey)}/nodes?${q}`);
+    return await figmaGet<Record<string, unknown>>(
+      `/v1/files/${encodeURIComponent(fileKey)}/nodes?${q}`,
+    );
   },
 
   /** Render a Figma frame to a PNG/SVG/JPG/PDF image URL from its share URL. */
@@ -146,7 +148,10 @@ export const Handlers: Record<
       format,
       scale: String(scale),
     });
-    const data = await figmaGet(`/v1/images/${encodeURIComponent(fileKey)}?${q}`);
+    // /v1/images returns { err, images: { [nodeId]: signedUrl | null } } — only `images` is used.
+    const data = await figmaGet<{ images: Record<string, string | null> }>(
+      `/v1/images/${encodeURIComponent(fileKey)}?${q}`,
+    );
     return {
       images: data.images,
       note: "render URLs are signed and expire after ~30 days",

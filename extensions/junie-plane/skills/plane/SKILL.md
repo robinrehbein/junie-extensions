@@ -9,6 +9,8 @@ Self-hosted Plane at **https://plane.join-noah.de**, workspace slug **`noah`**. 
 **PROD** (product), **DEV** (engineering — default), **FND** (founding). All access goes through
 `scripts/plane.sh` (curl + jq) — **no MCP**.
 
+Copy this extension's `scripts/plane.sh` into `<project>/scripts/` before first use — the commands below call it from the project root.
+
 ## Configuration (environment)
 
 | Variable | Default | Notes |

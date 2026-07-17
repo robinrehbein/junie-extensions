@@ -45,8 +45,31 @@ export interface Handlers {
 }
 
 export function createHandlers(store: KnowledgeStore, embedder: Embedder): Handlers {
+  // Embedding-dimension drift guard: the first save records which embedder built the store;
+  // every later save/search must match it. Switching provider after data exists throws with a
+  // recovery path instead of silently returning [] (cross-provider cosine is meaningless).
+  function guardEmbedder(firstWrite: boolean): void {
+    const storedName = store.getMeta("embedder_name");
+    const storedDim = store.getMeta("embedder_dim");
+    if (storedName === null && storedDim === null) {
+      if (firstWrite) {
+        store.setMeta("embedder_name", embedder.name);
+        store.setMeta("embedder_dim", String(embedder.dim));
+      }
+      return;
+    }
+    if (storedName !== embedder.name || Number(storedDim) !== embedder.dim) {
+      throw new Error(
+        `Embedder mismatch: this store was built with '${storedName}' (dim ${storedDim}) but the ` +
+          `configured embedder is '${embedder.name}' (dim ${embedder.dim}). Recovery: delete ` +
+          `~/.junie/knowledge/knowledge.db and re-save, or export_knowledge with the old embedder, ` +
+          `wipe the store, and re-import.`,
+      );
+    }
+  }
+
   // Near-duplicate detection against existing same-kind/same-project entries.
-  async function dedup(kind: string, project: string | null, vec: number[], excludeId?: string) {
+  function dedup(kind: string, project: string | null, vec: number[], excludeId?: string) {
     return store
       .entriesWithEmbedding({ kind, project })
       .filter((c) => c.id !== excludeId)
@@ -90,8 +113,9 @@ export function createHandlers(store: KnowledgeStore, embedder: Embedder): Handl
         ? candidate
         : null;
       const id = existing?.id ?? (candidate ? ulid() : (requestedId ?? ulid()));
+      guardEmbedder(true); // first write records the embedder identity; later writes must match
       const [vec] = await embedder.embed([`${title}\n${body}`]);
-      const dedup_hint = await dedup(kind, project, vec, id);
+      const dedup_hint = dedup(kind, project, vec, id);
 
       const ts = now();
       const entry: Entry = {
@@ -127,6 +151,7 @@ export function createHandlers(store: KnowledgeStore, embedder: Embedder): Handl
         ? Math.min(args.k as number, MAX_K)
         : DEFAULT_K;
 
+      guardEmbedder(false); // never set meta from a search; only compare when data exists
       const [qvec] = await embedder.embed([query]);
       // ponytail: in-memory cosine over all matching embeddings.
       // Ceiling ~tens of thousands of entries; drop-in sqlite-vec when the store outgrows it.

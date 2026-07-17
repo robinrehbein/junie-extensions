@@ -44,8 +44,6 @@ declare -A USER=(
 )
 
 require() { command -v "$1" >/dev/null 2>&1 || { echo "missing dependency: $1" >&2; exit 1; }; }
-require curl
-require jq
 
 # api <METHOD> <PATH> [JSON_BODY]   PATH is relative to /api/v1/workspaces/$WS
 api() {
@@ -94,9 +92,10 @@ state_uuid() {
 }
 
 strip_html() { sed -E 's/<[^>]+>/ /g; s/&nbsp;/ /g; s/&amp;/\&/g; s/&lt;/</g; s/&gt;/>/g; s/  +/ /g'; }
+escape_html() { sed -E 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g'; }
 
 cmd="${1:-}"; shift || true
-case "$cmd" in ""|help|-h|--help) ;; *) [[ -n "${PLANE_API_KEY:-}" ]] || { echo "PLANE_API_KEY is not set (see scripts/plane.sh header)" >&2; exit 1; } ;; esac
+case "$cmd" in ""|help|-h|--help) ;; *) require curl; require jq; [[ -n "${PLANE_API_KEY:-}" ]] || { echo "PLANE_API_KEY is not set (see scripts/plane.sh header)" >&2; exit 1; } ;; esac
 case "$cmd" in
   projects)
     api GET "/projects/" | resultsjq \
@@ -148,7 +147,7 @@ case "$cmd" in
     pid_="$(pid "$proj")"
     iid="$(resolve_issue "$ref" "$proj")"
     [[ -n "$iid" ]] || { echo "issue not found: $ref" >&2; exit 1; }
-    body="$(jq -n --arg c "<p>$text</p>" '{comment_html:$c}')"
+    body="$(jq -n --arg c "<p>$(printf '%s' "$text" | escape_html)</p>" '{comment_html:$c}')"
     api POST "/projects/$pid_/issues/$iid/comments/" "$body" | jq '{id, created_at}'
     ;;
   move)
@@ -166,19 +165,19 @@ case "$cmd" in
     proj="$DEFAULT_PROJECT"; name=""; sname=""; priority=""; assignee=""; label=""; desc=""
     while [[ $# -gt 0 ]]; do
       case "$1" in
-        --name) name="$2"; shift 2;;
-        --state) sname="$2"; shift 2;;
-        --priority) priority="$2"; shift 2;;
-        --assignee) assignee="$2"; shift 2;;
-        --label) label="$2"; shift 2;;
-        --description) desc="$2"; shift 2;;
+        --name) name="${2:?--name requires a value}"; shift 2;;
+        --state) sname="${2:?--state requires a value}"; shift 2;;
+        --priority) priority="${2:?--priority requires a value}"; shift 2;;
+        --assignee) assignee="${2:?--assignee requires a value}"; shift 2;;
+        --label) label="${2:?--label requires a value}"; shift 2;;
+        --description) desc="${2:?--description requires a value}"; shift 2;;
         *) [[ "$1" =~ ^(PROD|DEV|FND)$ || "$1" =~ ^[0-9a-fA-F-]{36}$ ]] && { proj="$1"; shift; } || { echo "unknown arg: $1" >&2; exit 1; };;
       esac
     done
     [[ -n "$name" ]] || { echo "--name is required" >&2; exit 1; }
     pid_="$(pid "$proj")"
     sid=""; [[ -n "$sname" ]] && sid="$(state_uuid "$pid_" "$sname")"
-    body="$(jq -nc --arg name "$name" --arg desc "$desc" --arg state "$sid" --arg prio "$priority" \
+    body="$(jq -nc --arg name "$name" --arg desc "$(printf '%s' "$desc" | escape_html)" --arg state "$sid" --arg prio "$priority" \
       --arg assignee "$assignee" --arg label "$label" '
         {name:$name, description_html:("<p>\($desc)</p>")}
         + (if $state!="" then {state:$state} else {} end)
@@ -192,7 +191,7 @@ case "$cmd" in
     pid_="$(pid "$proj")"; iid="$(resolve_issue "$ref" "$proj")"
     [[ -n "$iid" ]] || { echo "issue not found: $ref" >&2; exit 1; }
     sname=""; priority=""
-    while [[ $# -gt 0 ]]; do case "$1" in --state) sname="$2"; shift 2;; --priority) priority="$2"; shift 2;; *) echo "unknown arg: $1" >&2; exit 1;; esac; done
+    while [[ $# -gt 0 ]]; do case "$1" in --state) sname="${2:?--state requires a value}"; shift 2;; --priority) priority="${2:?--priority requires a value}"; shift 2;; *) echo "unknown arg: $1" >&2; exit 1;; esac; done
     sid=""; [[ -n "$sname" ]] && sid="$(state_uuid "$pid_" "$sname")"
     body="$(jq -nc --arg s "$sid" --arg p "$priority" '({} + (if $s!="" then {state:$s} else {} end) + (if $p!="" then {priority:$p} else {} end))')"
     api PATCH "/projects/$pid_/issues/$iid/" "$body" >/dev/null

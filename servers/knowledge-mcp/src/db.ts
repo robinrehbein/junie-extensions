@@ -99,7 +99,24 @@ export class KnowledgeStore {
       | undefined;
     if (!row) {
       this.db.prepare("INSERT INTO meta(key, value) VALUES('schema_version', ?)").run(SCHEMA_VERSION);
+    } else if (String(row.value) !== SCHEMA_VERSION) {
+      // Loud, not silent: a drifting schema must stop the server until a real migration exists.
+      throw new Error(
+        `knowledge DB has schema_version ${String(row.value)} but this server expects ${SCHEMA_VERSION}. ` +
+          `No migrations are implemented yet — back up ~/.junie/knowledge, delete knowledge.db, and restart.`,
+      );
     }
+  }
+
+  getMeta(key: string): string | null {
+    const row = this.db.prepare("SELECT value FROM meta WHERE key = ?").get(key) as Row | undefined;
+    return row ? String(row.value) : null;
+  }
+
+  setMeta(key: string, value: string): void {
+    this.db.prepare(
+      "INSERT INTO meta(key, value) VALUES(?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+    ).run(key, value);
   }
 
   /** Run fn inside a transaction; roll back on error (keeps entry + embedding consistent). */

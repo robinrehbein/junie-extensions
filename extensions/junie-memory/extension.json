@@ -1,4 +1,4 @@
 {
   "name": "junie-memory",
-  "description": "A cross-session memory for Junie CLI, modeled on Claude Code's memory: an auto-loaded guideline that teaches the agent to recall facts at the start of a task and persist durable ones as files under ~/.junie/memory/, plus /remember and /memories slash commands. File-convention based — no server required."
+  "description": "A cross-session memory for Junie CLI, modeled on Claude Code's memory: an auto-loaded guideline that teaches the agent to recall facts at the start of a task and persist durable ones as files under ~/.junie/memory/, plus /remember and /memories slash commands. File-convention based — no server required. Ships scripts/recall-memory.sh, an optional UserPromptSubmit hook that injects the memory index into every prompt, so recall does not depend on the model remembering to read it."
 }
